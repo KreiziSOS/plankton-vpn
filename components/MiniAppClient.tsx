@@ -7,7 +7,6 @@ import {
   useTonConnectUI,
 } from '@tonconnect/ui-react'
 import { Address, beginCell, toNano } from '@ton/core'
-import { VPN_PRICING } from '@/lib/pricing'
 
 const BUY_URL =
   'https://dedust.io/swap/TON/EQBLl2zeXFnwt2MsCw_LOEcgP5zC0VRWTeMA7NMNErLrOijA?amount=100000000000'
@@ -192,6 +191,14 @@ export default function MiniAppClient() {
   const [status, setStatus] = useState(t.locked)
   const [configUrl, setConfigUrl] = useState('')
   const [forcePlans, setForcePlans] = useState(false)
+  const [pricingData, setPricingData] = useState<any>(null)
+
+  useEffect(() => {
+    fetch('/api/pricing')
+      .then(r => r.json())
+      .then(data => { if (data.plans) setPricingData(data) })
+      .catch(() => {})
+  }, [])
 
   // Route to plans tab when opened via bot subscription button or deep link
   useEffect(() => {
@@ -349,14 +356,13 @@ export default function MiniAppClient() {
         return
       }
 
-      const pricing = VPN_PRICING[plan as keyof typeof VPN_PRICING]
       const receiver = process.env.NEXT_PUBLIC_PAYMENT_WALLET!
 
-      // TEP-74 jetton transfer body
+      // TEP-74 jetton transfer body — amount locked by server in payment.amountToken
       const transferBody = beginCell()
-        .storeUint(0x0f8a7ea5, 32)                   // transfer op
-        .storeUint(0, 64)                             // query_id
-        .storeCoins(BigInt(pricing.planktonNano))     // amount of jettons
+        .storeUint(0x0f8a7ea5, 32)                             // transfer op
+        .storeUint(0, 64)                                      // query_id
+        .storeCoins(BigInt(created.payment.amountToken))       // amount of jettons
         .storeAddress(Address.parse(receiver))        // destination (receives jettons)
         .storeAddress(Address.parse(wallet))          // response_destination (excess TON back)
         .storeBit(false)                              // no custom payload
@@ -419,14 +425,12 @@ export default function MiniAppClient() {
         return
       }
 
-      const pricing = VPN_PRICING[plan as keyof typeof VPN_PRICING]
-
       const result = await tonConnectUI.sendTransaction({
         validUntil: Math.floor(Date.now() / 1000) + 600,
         messages: [
           {
             address: receiver,
-            amount: pricing.tonNano,
+            amount: created.payment.amountToken,  // locked by server at create time
             payload: created.payment.id,
           },
         ],
@@ -504,6 +508,7 @@ export default function MiniAppClient() {
                           loading={loading}
                           createPlan={createPlan}
                           payWithTon={payWithTon}
+                          pricingData={pricingData}
                         />
                       </>
                     )}
@@ -567,84 +572,47 @@ export default function MiniAppClient() {
   )
 }
 
-function PlansBlock({ t, loading, createPlan, payWithTon }: any) {
+function PlansBlock({ t, loading, createPlan, payWithTon, pricingData }: any) {
+  const plans = [
+    { key: 'ONE_MONTH',     label: '1 Month',   tonUsd: 3,  planktonUsd: 2  },
+    { key: 'THREE_MONTHS',  label: '3 Months',  tonUsd: 7,  planktonUsd: 5  },
+    { key: 'TWELVE_MONTHS', label: '12 Months', tonUsd: 20, planktonUsd: 14 },
+  ]
+
   return (
     <div style={setupCard}>
       <div style={sectionTitle}>{t.plans}</div>
 
-      <div style={planCard}>
-        <div>
-          <div style={planTitle}>1 Month</div>
-          <div style={muted}>TON: $3 / $PLANKTON: $2</div>
-        </div>
+      {plans.map(({ key, label, tonUsd, planktonUsd }) => {
+        const api = pricingData?.plans?.find((p: any) => p.plan === key)
+        const tonLine      = api ? `${api.tonDisplay} TON ≈ $${tonUsd}`           : `TON: $${tonUsd}`
+        const planktonLine = api ? `${api.planktonDisplay} $PLANKTON ≈ $${planktonUsd}` : `$PLANKTON: $${planktonUsd}`
 
-        <div style={planButtons}>
-          <button
-            disabled={loading}
-            onClick={() => payWithTon('ONE_MONTH')}
-            style={smallGreenBtn}
-          >
-            TON
-          </button>
+        return (
+          <div key={key} style={planCard}>
+            <div>
+              <div style={planTitle}>{label}</div>
+              <div style={muted}>{tonLine}</div>
+              <div style={muted}>{planktonLine}</div>
+            </div>
 
-          <button
-            disabled={loading}
-            onClick={() => createPlan('ONE_MONTH', 'PLANKTON')}
-            style={smallBlueBtn}
-          >
-            $PLANKTON
-          </button>
-        </div>
-      </div>
+            <div style={planButtons}>
+              <button disabled={loading} onClick={() => payWithTon(key)} style={smallGreenBtn}>
+                TON
+              </button>
+              <button disabled={loading} onClick={() => createPlan(key, 'PLANKTON')} style={smallBlueBtn}>
+                $PLANKTON
+              </button>
+            </div>
+          </div>
+        )
+      })}
 
-      <div style={planCard}>
-        <div>
-          <div style={planTitle}>3 Months</div>
-          <div style={muted}>TON: $7 / $PLANKTON discount</div>
-        </div>
-
-        <div style={planButtons}>
-          <button
-            disabled={loading}
-            onClick={() => payWithTon('THREE_MONTHS')}
-            style={smallGreenBtn}
-          >
-            TON
-          </button>
-
-          <button
-            disabled={loading}
-            onClick={() => createPlan('THREE_MONTHS', 'PLANKTON')}
-            style={smallBlueBtn}
-          >
-            $PLANKTON
-          </button>
-        </div>
-      </div>
-
-      <div style={planCard}>
-        <div>
-          <div style={planTitle}>12 Months</div>
-          <div style={muted}>TON: $20 / $PLANKTON discount</div>
-        </div>
-
-        <div style={planButtons}>
-          <button
-            disabled={loading}
-            onClick={() => payWithTon('TWELVE_MONTHS')}
-            style={smallGreenBtn}
-          >
-            TON
-          </button>
-
-          <button
-            disabled={loading}
-            onClick={() => createPlan('TWELVE_MONTHS', 'PLANKTON')}
-            style={smallBlueBtn}
-          >
-            $PLANKTON
-          </button>
-        </div>
+      <div style={poweredBy}>
+        Prices powered by{' '}
+        <a href="https://www.coingecko.com" target="_blank" rel="noopener" style={cgLink}>
+          CoinGecko
+        </a>
       </div>
     </div>
   )
@@ -1117,6 +1085,18 @@ const planButtons: React.CSSProperties = {
   gridTemplateColumns: '1fr 1fr',
   gap: 8,
   marginTop: 12,
+}
+
+const poweredBy: React.CSSProperties = {
+  marginTop: 10,
+  textAlign: 'center',
+  fontSize: 11,
+  color: '#4a6070',
+}
+
+const cgLink: React.CSSProperties = {
+  color: '#6a90a8',
+  textDecoration: 'none',
 }
 
 const smallGreenBtn: React.CSSProperties = {

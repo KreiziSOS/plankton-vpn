@@ -79,7 +79,7 @@ export async function GET(req: Request) {
           const ts: number = tx.utime ?? 0
           return (
             from === senderRaw &&
-            value >= BigInt(pricing.tonNano) &&
+            value >= BigInt(payment.amountToken || '0') &&
             ts >= createdTs - 60 &&   // tx can arrive up to 60s before we recorded the payment
             ts <= createdTs + 1800    // give 30min for confirmation
           )

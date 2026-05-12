@@ -66,7 +66,11 @@ export async function POST(req: Request) {
       }
     })
 
-    if (!outMsg || BigInt(outMsg.value ?? '0') < BigInt(pricing.tonNano)) {
+    if (!payment.amountToken || payment.amountToken === '0') {
+      return NextResponse.json({ ok: false, error: 'Payment has no locked amount — recreate payment' })
+    }
+
+    if (!outMsg || BigInt(outMsg.value ?? '0') < BigInt(payment.amountToken)) {
       return NextResponse.json({
         ok: true,
         verified: false,

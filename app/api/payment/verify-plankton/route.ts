@@ -51,7 +51,7 @@ export async function POST(req: Request) {
             fromRaw === senderRaw &&
             toRaw === paymentWalletRaw &&
             tokenRaw === jettonMasterRaw &&
-            BigInt(jt?.amount ?? '0') >= BigInt(pricing.planktonNano)
+            BigInt(jt?.amount ?? '0') >= BigInt(payment.amountToken || '0')
           )
         } catch {
           return false
@@ -61,6 +61,10 @@ export async function POST(req: Request) {
 
     if (!match) {
       return NextResponse.json({ ok: true, verified: false, pending: true })
+    }
+
+    if (!payment.amountToken || payment.amountToken === '0') {
+      return NextResponse.json({ ok: false, error: 'Payment has no locked amount — recreate payment' })
     }
 
     const eventId: string = match.event_id
