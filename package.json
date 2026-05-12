@@ -1,0 +1,32 @@
+{
+  "name": "plankton-vpn-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+  "dev": "next dev",
+  "build": "prisma generate && next build",
+  "start": "next start",
+  "lint": "next lint",
+  "bot": "tsx bot/index.ts"
+},
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "@ton/core": "^0.63.1",
+    "@tonconnect/ui-react": "^2.4.4",
+    "axios": "latest",
+    "dotenv": "latest",
+    "grammy": "latest",
+    "next": "latest",
+    "prisma": "^5.22.0",
+    "qrcode": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "tsx": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "typescript": "latest"
+  }
+}
