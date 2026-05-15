@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import { Bot, InlineKeyboard, InputFile } from 'grammy'
 import { prisma } from '../lib/prisma'
+import { checkUserAccess } from '../lib/access'
 import { getUserLanguage } from './helpers/getUserLanguage'
 import { loc } from './helpers/loc'
 
@@ -65,17 +66,32 @@ bot.callbackQuery('myvpn', async (ctx) => {
     return
   }
 
-  const res  = await fetch(`${appUrl}/api/check-plankton?wallet=${user.wallet}`)
-  const data = await res.json()
+  const access = await checkUserAccess(user.wallet)
+
+  const balance = 'balance' in access.plankton
+    ? String(access.plankton.balance)
+    : '?'
+
+  let accessLine: string
+  if (access.source === 'none') {
+    accessLine = loc(lang, 'vpn_access_inactive')
+  } else if (access.source === 'holder') {
+    accessLine = loc(lang, 'vpn_access_holder')
+  } else if (access.source === 'subscription') {
+    const d = new Date(access.subscription!.expiresAt).toLocaleDateString()
+    accessLine = loc(lang, 'vpn_access_subscription').replace('{date}', d)
+  } else {
+    // 'both'
+    const d = new Date(access.subscription!.expiresAt).toLocaleDateString()
+    accessLine = loc(lang, 'vpn_access_both').replace('{date}', d)
+  }
 
   await ctx.reply(
     loc(lang, 'vpn_status_header')
       .replace('{wallet}',  user.wallet)
-      .replace('{balance}', String(data.balance || 0))
+      .replace('{balance}', balance)
       .replace('{devices}', String(user.devices.length))
-      .replace('{access}',  data.hasAccess
-        ? loc(lang, 'vpn_access_active')
-        : loc(lang, 'vpn_access_inactive')),
+      .replace('{access}',  accessLine),
     { reply_markup: mainMenu(lang) }
   )
 })
@@ -134,11 +150,10 @@ bot.callbackQuery('createvpn', async (ctx) => {
     return
   }
 
-  const checkRes = await fetch(`${appUrl}/api/check-plankton?wallet=${user.wallet}`)
-  const check    = await checkRes.json()
+  const access = await checkUserAccess(user.wallet)
 
-  if (!check.hasAccess) {
-    await ctx.reply(loc(lang, 'not_enough_plankton'))
+  if (!access.hasAccess) {
+    await ctx.reply(loc(lang, 'no_access'))
     return
   }
 

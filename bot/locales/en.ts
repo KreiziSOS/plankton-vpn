@@ -35,8 +35,11 @@ const en = {
     '$PLANKTON:\n{balance}\n\n' +
     'Access:\n{access}\n\n' +
     'Devices:\n{devices}',
-  vpn_access_active:   '✅ Active',
-  vpn_access_inactive: '❌ Inactive',
+  vpn_access_active:       '✅ Active',
+  vpn_access_inactive:     '❌ Inactive',
+  vpn_access_holder:       '✅ PLANKTON holder (1M+)',
+  vpn_access_subscription: '✅ Active until {date}',
+  vpn_access_both:         '✅ PLANKTON holder + Active until {date}',
 
   // Devices list
   no_devices:            'No devices yet.',
@@ -49,6 +52,7 @@ const en = {
 
   // Create VPN
   not_enough_plankton: 'Not enough $PLANKTON for free access.\nUse Subscription to get paid access.',
+  no_access: 'Access denied.\n\nYou need 1,000,000+ $PLANKTON or an active subscription to use VPN.',
   vpn_creation_failed: 'VPN creation failed. Please try again.',
   vpn_ready:           'VPN access ready.\n\nDevice:\n{name}',
 

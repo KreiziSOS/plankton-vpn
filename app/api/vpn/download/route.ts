@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { checkUserAccess } from '@/lib/access'
+import { generateAmneziaConfig } from '@/lib/vpn/generateAmneziaConfig'
 
 const WG_URL = process.env.WG_EASY_URL
 const WG_PASSWORD = process.env.WG_EASY_PASSWORD
@@ -61,6 +63,15 @@ export async function GET(req: Request) {
       )
     }
 
+    // Real-time access check — cron state may be stale if it hasn't run yet.
+    const access = await checkUserAccess(device.wallet)
+    if (!access.hasAccess) {
+      return NextResponse.json(
+        { ok: false, error: 'No active subscription or insufficient PLANKTON balance' },
+        { status: 403 }
+      )
+    }
+
     const cookie = await loginWgEasy()
 
     const configRes = await fetch(
@@ -81,11 +92,22 @@ export async function GET(req: Request) {
     }
 
     const config = await configRes.text()
+    const protocol = device.protocol || 'wireguard'
 
-    return new Response(config, {
+const finalConfig =
+  protocol === 'amnezia'
+    ? generateAmneziaConfig(config)
+    : config
+
+const filename =
+  protocol === 'amnezia'
+    ? `${device.name}.awg`
+    : `${device.name}.conf`
+
+    return new Response(finalConfig, {
       headers: {
         'Content-Type': 'application/octet-stream',
-        'Content-Disposition': `attachment; filename="${device.name}.conf"`,
+        'Content-Disposition': `attachment; filename="${filename}"`,
       },
     })
   } catch (e: any) {

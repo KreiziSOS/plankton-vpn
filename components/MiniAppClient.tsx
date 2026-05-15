@@ -18,6 +18,7 @@ const X_URL = 'https://x.com/CEO_Plankton'
 
 type Tab = 'home' | 'vpn' | 'guide' | 'profile'
 type Lang = 'en' | 'ru' | 'ua' | 'zh'
+type Protocol = 'wireguard' | 'amnezia'
 
 declare global {
   interface Window {
@@ -56,6 +57,10 @@ const TEXT = {
     wgOfficial: 'Open WireGuard Official',
     plans: 'VPN Plans',
     subActive: 'Subscription Active',
+    protocol: 'VPN Protocol',
+    wireguardDesc: 'Fast • Lightweight • Default',
+    amneziaDesc: 'Better bypass • Anti-blocking • Smart routing',
+    comingSoon: 'Coming soon',
   },
   ru: {
     title: 'PLANKTON VPN',
@@ -87,6 +92,10 @@ const TEXT = {
     wgOfficial: 'Открыть WireGuard Official',
     plans: 'VPN тарифы',
     subActive: 'Подписка активна',
+    protocol: 'VPN протокол',
+    wireguardDesc: 'Быстрый • Лёгкий • По умолчанию',
+    amneziaDesc: 'Лучше обход • Антиблокировка • Smart routing',
+    comingSoon: 'Скоро',
   },
   ua: {
     title: 'PLANKTON VPN',
@@ -118,6 +127,10 @@ const TEXT = {
     wgOfficial: 'Відкрити WireGuard Official',
     plans: 'VPN тарифи',
     subActive: 'Підписка активна',
+    protocol: 'VPN протокол',
+    wireguardDesc: 'Швидкий • Легкий • За замовчуванням',
+    amneziaDesc: 'Кращий обхід • Антиблокування • Smart routing',
+    comingSoon: 'Скоро',
   },
   zh: {
     title: 'PLANKTON VPN',
@@ -149,6 +162,10 @@ const TEXT = {
     wgOfficial: '打开 WireGuard 官网',
     plans: 'VPN 套餐',
     subActive: '订阅已激活',
+    protocol: 'VPN 协议',
+    wireguardDesc: '快速 • 轻量 • 默认',
+    amneziaDesc: '更好绕过 • 抗封锁 • 智能路由',
+    comingSoon: '即将推出',
   },
 }
 
@@ -192,6 +209,7 @@ export default function MiniAppClient() {
   const [configUrl, setConfigUrl] = useState('')
   const [forcePlans, setForcePlans] = useState(false)
   const [pricingData, setPricingData] = useState<any>(null)
+  const [protocol, setProtocol] = useState<Protocol>('wireguard')
 
   useEffect(() => {
     fetch('/api/pricing')
@@ -307,23 +325,36 @@ export default function MiniAppClient() {
   async function generateConfig() {
     if (!wallet) return
     setLoading(true)
-
+  
     try {
       const res = await fetch('/api/vpn/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ wallet }),
+        body: JSON.stringify({
+          wallet,
+          protocol,
+        }),
       })
-
+  
       const data = await res.json()
-      const deviceName = data.device?.name
-
+  
+      if (!data.ok || !data.device?.name) {
+        console.error('VPN create error:', data)
+        alert(data.error || 'VPN config creation failed')
+        setLoading(false)
+        return
+      }
+  
+      const deviceName = encodeURIComponent(data.device.name)
+  
       setConfigUrl(`/api/vpn/download?name=${deviceName}`)
       setStatus('Config ready')
-    } catch {
+    } catch (e) {
+      console.error(e)
       setStatus('Error')
+      alert('VPN config creation failed')
     }
-
+  
     setLoading(false)
   }
 
@@ -431,7 +462,12 @@ export default function MiniAppClient() {
           {
             address: receiver,
             amount: created.payment.amountToken,  // locked by server at create time
-            payload: created.payment.id,
+            payload: beginCell()
+  .storeUint(0, 32)
+  .storeStringTail(created.payment.id)
+  .endCell()
+  .toBoc()
+  .toString('base64'),
           },
         ],
       })
@@ -515,29 +551,78 @@ export default function MiniAppClient() {
 
                     {hasAccess && (
                       <div style={setupCard}>
-                        <div style={wgHead}>
-                          <div style={wgLogoBox}>
-                            <img src="/assets/wireguard-logo.png" alt="WireGuard" style={wgLogo} />
-                          </div>
+                        <ProtocolSelector
+                          t={t}
+                          protocol={protocol}
+                          setProtocol={setProtocol}
+                        />
 
-                          <div>
-                            <div style={wgTitle}>WireGuard</div>
-                            <div style={muted}>Official VPN protocol</div>
-                          </div>
-                        </div>
+                        {protocol === 'wireguard' && (
+                          <>
+                            <div style={wgHead}>
+                              <div style={wgLogoBox}>
+                                <img src="/assets/wireguard-logo.png" alt="WireGuard" style={wgLogo} />
+                              </div>
 
-                        <a href={WIREGUARD_URL} target="_blank" style={outlineBtn}>
-                          ⬇ {t.install}
-                        </a>
+                              <div>
+                                <div style={wgTitle}>WireGuard</div>
+                                <div style={muted}>Official VPN protocol</div>
+                              </div>
+                            </div>
 
-                        <button onClick={generateConfig} disabled={loading} style={greenBtn}>
-                          ⚙ {loading ? t.checking : t.generate}
-                        </button>
+                            <a href={WIREGUARD_URL} target="_blank" style={outlineBtn}>
+                              ⬇ {t.install}
+                            </a>
 
-                        {configUrl && (
-                          <a href={configUrl} target="_blank" style={downloadBtn}>
-                            📄 {t.download}
-                          </a>
+                            <button onClick={generateConfig} disabled={loading} style={greenBtn}>
+                              ⚙ {loading ? t.checking : t.generate}
+                            </button>
+
+                            {configUrl && (
+                              <a href={configUrl} target="_blank" style={downloadBtn}>
+                                📄 {t.download}
+                              </a>
+                            )}
+                          </>
+                        )}
+
+                        {protocol === 'amnezia' && (
+                          <>
+                            <div style={amneziaBox}>
+                              <div style={amneziaLogoBox}>
+                                <img
+                                  src="/amnezia-logo.png"
+                                  alt="Amnezia VPN"
+                                  style={amneziaLogo}
+                                />
+                              </div>
+
+                              <div>
+                                <div style={wgTitle}>Amnezia VPN</div>
+                                <div style={muted}>{t.amneziaDesc}</div>
+                                <div style={comingSoon}>AWG profile</div>
+                              </div>
+                            </div>
+
+                            <a
+                              href="https://amnezia.org/"
+                              target="_blank"
+                              rel="noopener"
+                              style={outlineBtn}
+                            >
+                              ⬇ Install Amnezia VPN
+                            </a>
+
+                            <button onClick={generateConfig} disabled={loading} style={greenBtn}>
+                              ⚙ {loading ? t.checking : t.generate}
+                            </button>
+
+                            {configUrl && (
+                              <a href={configUrl} target="_blank" style={downloadBtn}>
+                                📄 {t.download}
+                              </a>
+                            )}
+                          </>
                         )}
                       </div>
                     )}
@@ -568,6 +653,33 @@ export default function MiniAppClient() {
         <NavBtn active={tab === 'guide'} label={t.guide} icon="?" onClick={() => setTab('guide')} />
         <NavBtn active={tab === 'profile'} label={t.profile} icon="●" onClick={() => setTab('profile')} />
       </div>
+    </div>
+  )
+}
+
+
+function ProtocolSelector({ t, protocol, setProtocol }: any) {
+  return (
+    <div style={protocolWrap}>
+      <div style={sectionTitle}>{t.protocol}</div>
+
+      <button
+        type="button"
+        onClick={() => setProtocol('wireguard')}
+        style={{ ...protocolCard, ...(protocol === 'wireguard' ? protocolCardActive : {}) }}
+      >
+        <div style={protocolName}>WireGuard</div>
+        <div style={muted}>{t.wireguardDesc}</div>
+      </button>
+
+      <button
+        type="button"
+        onClick={() => setProtocol('amnezia')}
+        style={{ ...protocolCard, ...(protocol === 'amnezia' ? protocolCardActive : {}) }}
+      >
+        <div style={protocolName}>Amnezia VPN</div>
+        <div style={muted}>{t.amneziaDesc}</div>
+      </button>
     </div>
   )
 }
@@ -1097,6 +1209,75 @@ const poweredBy: React.CSSProperties = {
 const cgLink: React.CSSProperties = {
   color: '#6a90a8',
   textDecoration: 'none',
+}
+
+const protocolWrap: React.CSSProperties = {
+  display: 'grid',
+  gap: 10,
+  marginBottom: 16,
+}
+
+const protocolCard: React.CSSProperties = {
+  width: '100%',
+  textAlign: 'left',
+  borderRadius: 20,
+  padding: 14,
+  background: 'rgba(255,255,255,.045)',
+  border: '1px solid rgba(255,255,255,.08)',
+  color: '#fff',
+}
+
+const protocolCardActive: React.CSSProperties = {
+  border: '1px solid rgba(80,212,255,.65)',
+  boxShadow: '0 0 24px rgba(0,152,234,.16)',
+  background: 'linear-gradient(180deg,rgba(0,152,234,.18),rgba(255,255,255,.045))',
+}
+
+const protocolName: React.CSSProperties = {
+  fontSize: 17,
+  fontWeight: 1000,
+  marginBottom: 5,
+}
+
+const amneziaBox: React.CSSProperties = {
+  display: 'flex',
+  gap: 14,
+  alignItems: 'center',
+  borderRadius: 22,
+  padding: 14,
+  background: 'rgba(0,152,234,.10)',
+  border: '1px solid rgba(80,212,255,.18)',
+}
+
+const amneziaLogoBox: React.CSSProperties = {
+  width: 86,
+  height: 86,
+  minWidth: 86,
+  borderRadius: 24,
+  overflow: 'hidden',
+  background: 'rgba(255,255,255,0.06)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexShrink: 0,
+}
+
+const amneziaLogo: React.CSSProperties = {
+  width: 86,
+  height: 86,
+  objectFit: 'contain',
+  display: 'block',
+}
+
+const comingSoon: React.CSSProperties = {
+  display: 'inline-flex',
+  marginTop: 10,
+  padding: '6px 10px',
+  borderRadius: 999,
+  background: 'rgba(255,255,255,.08)',
+  color: '#50d4ff',
+  fontSize: 11,
+  fontWeight: 1000,
 }
 
 const smallGreenBtn: React.CSSProperties = {

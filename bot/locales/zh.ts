@@ -33,8 +33,11 @@ const zh: LocaleData = {
     '$PLANKTON：\n{balance}\n\n' +
     '访问状态：\n{access}\n\n' +
     '设备数：\n{devices}',
-  vpn_access_active:   '✅ 已激活',
-  vpn_access_inactive: '❌ 未激活',
+  vpn_access_active:       '✅ 已激活',
+  vpn_access_inactive:     '❌ 未激活',
+  vpn_access_holder:       '✅ PLANKTON 持有者 (1M+)',
+  vpn_access_subscription: '✅ 有效至 {date}',
+  vpn_access_both:         '✅ PLANKTON 持有者 + 有效至 {date}',
 
   no_devices:            '暂无设备。',
   device_item:           '设备：{name}\n\n状态：{status}\n\nVPN IP：{ip}',
@@ -45,6 +48,7 @@ const zh: LocaleData = {
   device_deleted:        '设备已删除。',
 
   not_enough_plankton: '$PLANKTON 余额不足，无法获得免费访问。\n请订阅以获得付费访问。',
+  no_access: '访问被拒绝。\n\n需要持有 1,000,000+ $PLANKTON 或拥有有效订阅才能使用 VPN。',
   vpn_creation_failed: 'VPN 创建失败，请重试。',
   vpn_ready:           'VPN 已就绪。\n\n设备：\n{name}',
 

@@ -33,8 +33,11 @@ const ua: LocaleData = {
     '$PLANKTON:\n{balance}\n\n' +
     'Доступ:\n{access}\n\n' +
     'Пристроїв:\n{devices}',
-  vpn_access_active:   '✅ Активний',
-  vpn_access_inactive: '❌ Неактивний',
+  vpn_access_active:       '✅ Активний',
+  vpn_access_inactive:     '❌ Неактивний',
+  vpn_access_holder:       '✅ Власник PLANKTON (1M+)',
+  vpn_access_subscription: '✅ Активна до {date}',
+  vpn_access_both:         '✅ Власник PLANKTON + Активна до {date}',
 
   no_devices:            'Пристроїв поки немає.',
   device_item:           'Пристрій: {name}\n\nСтатус: {status}\n\nVPN IP: {ip}',
@@ -45,6 +48,7 @@ const ua: LocaleData = {
   device_deleted:        'Пристрій видалено.',
 
   not_enough_plankton: 'Недостатньо $PLANKTON для безкоштовного доступу.\nОформіть підписку для платного доступу.',
+  no_access: 'Доступ закрито.\n\nДля використання VPN потрібно 1 000 000+ $PLANKTON або активна підписка.',
   vpn_creation_failed: 'Помилка створення VPN. Спробуйте ще раз.',
   vpn_ready:           'VPN готовий до використання.\n\nПристрій:\n{name}',
 

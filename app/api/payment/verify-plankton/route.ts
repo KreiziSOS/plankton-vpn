@@ -23,8 +23,10 @@ export async function POST(req: Request) {
     const paymentWalletRaw = Address.parse(PAYMENT_WALLET).toRawString()
     const jettonMasterRaw = Address.parse(JETTON_MASTER).toRawString()
 
-    // Look at account events for the payment wallet over the last 10 minutes
-    const since = Math.floor((Date.now() - 10 * 60 * 1000) / 1000)
+    // Look at account events after this payment was created.
+    // Small -60s tolerance covers clock/indexing differences but prevents
+    // an older identical transfer from activating a fresh payment.
+    const since = Math.floor(payment.createdAt.getTime() / 1000) - 60
 
     const eventsRes = await fetch(
       `https://tonapi.io/v2/accounts/${PAYMENT_WALLET}/events?limit=20&subject_only=true`,

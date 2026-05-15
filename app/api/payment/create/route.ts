@@ -27,8 +27,10 @@ export async function POST(req: Request) {
     const amountUsd   = currency === 'TON' ? pricing.tonUsd : pricing.planktonUsd
     const amountToken = await calculateNano(plan as keyof typeof VPN_PRICING, currency)
 
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000)
+
     const payment = await prisma.payment.create({
-      data: { wallet, plan, currency, amountUsd, amountToken, status: 'PENDING' },
+      data: { wallet, plan, currency, amountUsd, amountToken, status: 'PENDING', expiresAt },
     })
 
     return NextResponse.json({ ok: true, payment })

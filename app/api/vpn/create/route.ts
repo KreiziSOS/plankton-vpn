@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { checkUserAccess } from '@/lib/access'
 
 const WG_URL = process.env.WG_EASY_URL
 const WG_PASSWORD = process.env.WG_EASY_PASSWORD
@@ -42,21 +43,33 @@ async function getClients(cookie: string) {
 export async function POST(req: Request) {
   try {
     const body = await req.json()
+
     const wallet = body.wallet
+    const protocol =
+      body.protocol === 'amnezia' ? 'amnezia' : 'wireguard'
 
     if (!wallet) {
       return NextResponse.json(
-        {
-          ok: false,
-          error: 'Wallet required',
-        },
+        { ok: false, error: 'Wallet required' },
         { status: 400 }
+      )
+    }
+
+    const access = await checkUserAccess(wallet)
+
+    if (!access.hasAccess) {
+      return NextResponse.json(
+        { ok: false, error: 'No access' },
+        { status: 403 }
       )
     }
 
     const cookie = await loginWgEasy()
 
-    const name = `plankton-${wallet.slice(2, 10)}`
+    const name =
+      protocol === 'amnezia'
+        ? `plankton-amnezia-${wallet.slice(2, 10)}`
+        : `plankton-${wallet.slice(2, 10)}`
 
     await prisma.user.upsert({
       where: {
@@ -68,15 +81,14 @@ export async function POST(req: Request) {
       },
     })
 
-    const existingDevice =
-      await prisma.vpnDevice.findUnique({
-        where: {
-          wallet_name: {
-            wallet,
-            name,
-          },
+    const existingDevice = await prisma.vpnDevice.findUnique({
+      where: {
+        wallet_name: {
+          wallet,
+          name,
         },
-      })
+      },
+    })
 
     if (existingDevice) {
       return NextResponse.json({
@@ -93,25 +105,19 @@ export async function POST(req: Request) {
     )
 
     if (existingClient) {
-      const savedDevice =
-        await prisma.vpnDevice.create({
-          data: {
-            wallet,
-            name,
-            clientId: existingClient.id,
-            address: existingClient.address,
-            enabled:
-              existingClient.enabled ?? true,
-            expiresAt: new Date(
-              Date.now() +
-                30 *
-                  24 *
-                  60 *
-                  60 *
-                  1000
-            ),
-          },
-        })
+      const savedDevice = await prisma.vpnDevice.create({
+        data: {
+          wallet,
+          name,
+          protocol,
+          clientId: existingClient.id,
+          address: existingClient.address,
+          enabled: existingClient.enabled ?? true,
+          expiresAt: new Date(
+            Date.now() + 30 * 24 * 60 * 60 * 1000
+          ),
+        },
+      })
 
       return NextResponse.json({
         ok: true,
@@ -153,30 +159,22 @@ export async function POST(req: Request) {
     )
 
     if (!newClient) {
-      throw new Error(
-        'WG client created but not found'
-      )
+      throw new Error('WG client created but not found')
     }
 
-    const savedDevice =
-      await prisma.vpnDevice.create({
-        data: {
-          wallet,
-          name,
-          clientId: newClient.id,
-          address: newClient.address,
-          enabled:
-            newClient.enabled ?? true,
-          expiresAt: new Date(
-            Date.now() +
-              30 *
-                24 *
-                60 *
-                60 *
-                1000
-          ),
-        },
-      })
+    const savedDevice = await prisma.vpnDevice.create({
+      data: {
+        wallet,
+        name,
+        protocol,
+        clientId: newClient.id,
+        address: newClient.address,
+        enabled: newClient.enabled ?? true,
+        expiresAt: new Date(
+          Date.now() + 30 * 24 * 60 * 60 * 1000
+        ),
+      },
+    })
 
     return NextResponse.json({
       ok: true,
@@ -187,8 +185,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         ok: false,
-        error:
-          e.message || 'Server error',
+        error: e.message || 'Server error',
       },
       { status: 500 }
     )
