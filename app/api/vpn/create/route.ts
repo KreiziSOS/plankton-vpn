@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { checkUserAccess } from '@/lib/access'
+import { getDeviceLimit } from '@/lib/vpn/deviceLimits'
 
 const WG_URL = process.env.WG_EASY_URL
 const WG_PASSWORD = process.env.WG_EASY_PASSWORD
@@ -45,13 +46,12 @@ export async function POST(req: Request) {
     const body = await req.json()
 
     const wallet = body.wallet
-    const protocol =
-      body.protocol === 'amnezia' ? 'amnezia' : 'wireguard'
+    const protocol = body.protocol === 'amnezia' ? 'amnezia' : 'wireguard'
 
     if (!wallet) {
       return NextResponse.json(
         { ok: false, error: 'Wallet required' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
     if (!access.hasAccess) {
       return NextResponse.json(
         { ok: false, error: 'No access' },
-        { status: 403 }
+        { status: 403 },
       )
     }
 
@@ -98,11 +98,29 @@ export async function POST(req: Request) {
       })
     }
 
+    const deviceLimit = await getDeviceLimit(wallet)
+
+    const currentDevices = await prisma.vpnDevice.count({
+      where: {
+        wallet,
+      },
+    })
+
+    if (currentDevices >= deviceLimit) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: `Device limit reached. Your current limit is ${deviceLimit}.`,
+          limit: deviceLimit,
+          used: currentDevices,
+        },
+        { status: 403 },
+      )
+    }
+
     const clients = await getClients(cookie)
 
-    const existingClient = clients.find(
-      (c: any) => c.name === name
-    )
+    const existingClient = clients.find((c: any) => c.name === name)
 
     if (existingClient) {
       const savedDevice = await prisma.vpnDevice.create({
@@ -113,9 +131,7 @@ export async function POST(req: Request) {
           clientId: existingClient.id,
           address: existingClient.address,
           enabled: existingClient.enabled ?? true,
-          expiresAt: new Date(
-            Date.now() + 30 * 24 * 60 * 60 * 1000
-          ),
+          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         },
       })
 
@@ -126,19 +142,16 @@ export async function POST(req: Request) {
       })
     }
 
-    const createRes = await fetch(
-      `${WG_URL}/api/wireguard/client`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Cookie: cookie,
-        },
-        body: JSON.stringify({
-          name,
-        }),
-      }
-    )
+    const createRes = await fetch(`${WG_URL}/api/wireguard/client`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: cookie,
+      },
+      body: JSON.stringify({
+        name,
+      }),
+    })
 
     if (!createRes.ok) {
       const text = await createRes.text()
@@ -148,15 +161,13 @@ export async function POST(req: Request) {
           ok: false,
           error: text,
         },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
     const updatedClients = await getClients(cookie)
 
-    const newClient = updatedClients.find(
-      (c: any) => c.name === name
-    )
+    const newClient = updatedClients.find((c: any) => c.name === name)
 
     if (!newClient) {
       throw new Error('WG client created but not found')
@@ -170,9 +181,7 @@ export async function POST(req: Request) {
         clientId: newClient.id,
         address: newClient.address,
         enabled: newClient.enabled ?? true,
-        expiresAt: new Date(
-          Date.now() + 30 * 24 * 60 * 60 * 1000
-        ),
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       },
     })
 
@@ -187,7 +196,7 @@ export async function POST(req: Request) {
         ok: false,
         error: e.message || 'Server error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

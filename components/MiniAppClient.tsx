@@ -15,10 +15,23 @@ const WIREGUARD_URL = 'https://www.wireguard.com/install/'
 const TG_CHANNEL = 'https://t.me/plankton_info'
 const TG_CHAT = 'https://t.me/ceo_plankton'
 const X_URL = 'https://x.com/CEO_Plankton'
+const BOT_USERNAME = 'PlanktonVPNBot'
 
-type Tab = 'home' | 'vpn' | 'guide' | 'profile'
+type Tab = 'home' | 'vpn' | 'market' | 'guide' | 'profile'
 type Lang = 'en' | 'ru' | 'ua' | 'zh'
 type Protocol = 'wireguard' | 'amnezia'
+
+type VpnDevice = {
+  id: string
+  wallet: string
+  name: string
+  clientId?: string | null
+  address?: string | null
+  protocol?: Protocol | string
+  enabled: boolean
+  expiresAt?: string | null
+  createdAt?: string | null
+}
 
 declare global {
   interface Window {
@@ -29,31 +42,39 @@ declare global {
 const TEXT = {
   en: {
     title: 'PLANKTON VPN',
-    subtitle: 'Private WireGuard VPN access for $PLANKTON holders.',
+    subtitle: 'Private VPN access for the $PLANKTON community.',
     hold: 'Hold 1,000,000 $PLANKTON to unlock free VPN access.',
     check: 'Check Access',
     checking: 'Checking...',
     active: 'VPN Access Active',
     locked: 'Access Locked',
     buy: 'BUY $PLANKTON',
-    install: 'Install WireGuard',
+    install: 'Install',
     generate: 'Generate Config',
     download: 'Download Config',
     home: 'Home',
     vpn: 'VPN',
     guide: 'Guide',
     profile: 'Profile',
+    market: 'Market',
+    devices: 'My VPN Devices',
+    noDevices: 'No VPN devices yet',
+    refresh: 'Refresh',
+    deleteDevice: 'Delete',
+    activeDevice: 'Active',
+    disabledDevice: 'Disabled',
+    expires: 'Expires',
+    openMarket: 'Open Market',
     links: 'Community',
     channel: 'Telegram Channel',
     chat: 'Telegram Chat',
     twitter: 'X / Twitter',
     dashboard: 'Profile Dashboard',
     wallet: 'Wallet',
+    notConnected: 'Not connected',
+    statusLabel: 'STATUS',
+    telegramProfile: 'Telegram profile',
     guideTitle: 'How to activate VPN',
-    step1: 'Install the official WireGuard app.',
-    step2: 'Generate your Plankton VPN config.',
-    step3: 'Open WireGuard and import the downloaded .conf file.',
-    step4: 'Turn the VPN tunnel ON.',
     wgOfficial: 'Open WireGuard Official',
     plans: 'VPN Plans',
     subActive: 'Subscription Active',
@@ -61,34 +82,118 @@ const TEXT = {
     wireguardDesc: 'Fast • Lightweight • Default',
     amneziaDesc: 'Better bypass • Anti-blocking • Smart routing',
     comingSoon: 'Coming soon',
+    marketIntro: 'Buy extra VPN access even if you are already a holder. Paid plans unlock more devices and longer access.',
+    month1: '1 Month',
+    month3: '3 Months',
+    month12: '12 Months',
+    days30: '30 days VPN access',
+    days90: '90 days VPN access',
+    days365: '365 days VPN access',
+    devicesCount: 'devices',
+    bestOne: 'Best for testing PLANKTON VPN on phone and laptop.',
+    bestThree: 'Best balance for everyday use and several devices.',
+    bestYear: 'Best value. Perfect for power users and long-term access.',
+    featureProtocols: 'WireGuard + Amnezia',
+    featureDevices: 'Mobile + Desktop',
+    featureExpiry: 'Auto disable on expiry',
+    featureTelegram: 'Telegram-native access',
+    deviceLimitLine: 'Device limit',
+    activeVpnDevices: 'active VPN device(s)',
+    protocolsIncluded: 'Protocols included: WireGuard default + Amnezia AWG profile.',
+    payTon: 'Pay TON',
+    payPlankton: 'Pay $PLANKTON',
+    pricesPoweredBy: 'Prices powered by',
+    guideWireguardDesc: 'Fast, lightweight and default VPN protocol.',
+    guideAmneziaDesc: 'Better bypass, anti-blocking and AWG profile support.',
+    guideLimitsTitle: 'Device limits',
+    wgStep1: 'Install the official WireGuard app.',
+    wgStep2: 'Open VPN tab and select WireGuard.',
+    wgStep3: 'Generate and download your .conf file.',
+    wgStep4: 'Import the file into WireGuard and turn tunnel ON.',
+    amStep1: 'Install Amnezia VPN from the official website or app store.',
+    amStep2: 'Open VPN tab and select Amnezia VPN.',
+    amStep3: 'Generate and download your .awg profile.',
+    amStep4: 'Import the .awg profile into Amnezia and enable VPN.',
+    openAmnezia: 'Open Amnezia Official',
+    limitHolder: 'Holder access gives 1 VPN device.',
+    limitOne: '1 Month plan gives 2 VPN devices.',
+    limitThree: '3 Months plan gives 3 VPN devices.',
+    limitYear: '12 Months plan gives 5 VPN devices.',
+    connectWalletDevices: 'Connect wallet to see your devices.',
+    loadingDevices: 'Loading devices...',
+    noIp: 'No IP',
+    privateVpnAccess: 'Private VPN access',
+    stableMobileConfig: 'Stable mobile config',
+    autoDisabledExpires: 'Auto disabled if access expires',
+    installProtocol: 'Install',
+    confConfig: '.conf config',
+    awgProfile: '.awg profile',
+    referralTitle: 'Referral Program',
+    referralSubtitle: 'Invite friends and earn from paid VPN subscriptions.',
+    referralReward: '5 active paid referrals → 1 year VPN free',
+    totalReferrals: 'Total referrals',
+    activePaid: 'Active paid',
+    earnedTon: 'Earned TON',
+    freeYearProgress: 'Free year progress',
+    inviteFriend: 'Invite Friend',
+    copy: 'Copy',
+    withdrawals: 'Withdrawals from 1 TON by manual admin approval.',
+    referralShareText: 'Join PLANKTON VPN and unlock private VPN access with TON / $PLANKTON.',
+    copied: 'Referral link copied',
+    copyFailed: 'Could not copy link',
+    connectWalletFirst: 'Connect wallet first',
+    deleteConfirm: 'Delete this VPN device?',
+    deleteFailed: 'Failed to delete device',
+    paymentWalletMissing: 'Payment wallet missing',
+    paymentCreationFailed: 'Payment creation failed',
+    planktonWalletMissing: 'Could not find your PLANKTON wallet. Make sure you hold some $PLANKTON.',
+    planktonPaymentConfirmed: '$PLANKTON payment confirmed. VPN subscription activated.',
+    tonPaymentConfirmed: 'TON payment confirmed. VPN subscription activated.',
+    paymentPending: 'Payment sent but not confirmed yet. Wait a moment and check your access again.',
+    paymentFailed: 'Payment cancelled or failed',
+    vpnCreateFailed: 'VPN config creation failed',
+    deviceLimitTitle: 'Device limit reached.',
+    currentLimit: 'Current limit',
+    usedDevices: 'Used',
+    upgradeMarket: 'Open Market to upgrade your plan and add more devices.',
+    configReady: 'Config ready',
+    error: 'Error',
   },
   ru: {
     title: 'PLANKTON VPN',
-    subtitle: 'Приватный WireGuard VPN доступ для холдеров $PLANKTON.',
+    subtitle: 'Приватный VPN-доступ для сообщества $PLANKTON.',
     hold: 'Холди 1,000,000 $PLANKTON, чтобы получить бесплатный VPN.',
     check: 'Проверить доступ',
     checking: 'Проверка...',
     active: 'VPN доступ активен',
     locked: 'Доступ закрыт',
     buy: 'КУПИТЬ $PLANKTON',
-    install: 'Установить WireGuard',
+    install: 'Установить',
     generate: 'Создать конфиг',
     download: 'Скачать конфиг',
     home: 'Главная',
     vpn: 'VPN',
     guide: 'Гайд',
     profile: 'Профиль',
+    market: 'Маркет',
+    devices: 'Мои VPN устройства',
+    noDevices: 'VPN устройств пока нет',
+    refresh: 'Обновить',
+    deleteDevice: 'Удалить',
+    activeDevice: 'Активно',
+    disabledDevice: 'Отключено',
+    expires: 'Истекает',
+    openMarket: 'Открыть маркет',
     links: 'Комьюнити',
     channel: 'Telegram канал',
     chat: 'Telegram чат',
     twitter: 'X / Twitter',
     dashboard: 'Панель профиля',
     wallet: 'Кошелёк',
+    notConnected: 'Не подключён',
+    statusLabel: 'СТАТУС',
+    telegramProfile: 'Telegram профиль',
     guideTitle: 'Как активировать VPN',
-    step1: 'Установи официальное приложение WireGuard.',
-    step2: 'Создай конфиг Plankton VPN.',
-    step3: 'Открой WireGuard и импортируй скачанный .conf файл.',
-    step4: 'Включи VPN-туннель.',
     wgOfficial: 'Открыть WireGuard Official',
     plans: 'VPN тарифы',
     subActive: 'Подписка активна',
@@ -96,34 +201,118 @@ const TEXT = {
     wireguardDesc: 'Быстрый • Лёгкий • По умолчанию',
     amneziaDesc: 'Лучше обход • Антиблокировка • Smart routing',
     comingSoon: 'Скоро',
+    marketIntro: 'Покупай дополнительный VPN-доступ даже если ты уже холдер. Платные тарифы дают больше устройств и более долгий доступ.',
+    month1: '1 месяц',
+    month3: '3 месяца',
+    month12: '12 месяцев',
+    days30: '30 дней VPN-доступа',
+    days90: '90 дней VPN-доступа',
+    days365: '365 дней VPN-доступа',
+    devicesCount: 'устройства',
+    bestOne: 'Лучше всего для теста PLANKTON VPN на телефоне и ноутбуке.',
+    bestThree: 'Оптимальный баланс для ежедневного использования и нескольких устройств.',
+    bestYear: 'Лучшее предложение для активных пользователей и долгого доступа.',
+    featureProtocols: 'WireGuard + Amnezia',
+    featureDevices: 'Мобильный + ПК',
+    featureExpiry: 'Автоотключение после окончания доступа',
+    featureTelegram: 'Доступ прямо через Telegram',
+    deviceLimitLine: 'Лимит устройств',
+    activeVpnDevices: 'активных VPN устройств(а)',
+    protocolsIncluded: 'Включены протоколы: WireGuard по умолчанию + Amnezia AWG профиль.',
+    payTon: 'Оплатить TON',
+    payPlankton: 'Оплатить $PLANKTON',
+    pricesPoweredBy: 'Цены обновляются через',
+    guideWireguardDesc: 'Быстрый, лёгкий и основной VPN-протокол.',
+    guideAmneziaDesc: 'Лучше для обхода блокировок, антиблокинга и AWG профиля.',
+    guideLimitsTitle: 'Лимиты устройств',
+    wgStep1: 'Установи официальное приложение WireGuard.',
+    wgStep2: 'Открой вкладку VPN и выбери WireGuard.',
+    wgStep3: 'Создай и скачай .conf файл.',
+    wgStep4: 'Импортируй файл в WireGuard и включи туннель.',
+    amStep1: 'Установи Amnezia VPN с официального сайта или из app store.',
+    amStep2: 'Открой вкладку VPN и выбери Amnezia VPN.',
+    amStep3: 'Создай и скачай .awg профиль.',
+    amStep4: 'Импортируй .awg профиль в Amnezia и включи VPN.',
+    openAmnezia: 'Открыть Amnezia Official',
+    limitHolder: 'Холдерский доступ даёт 1 VPN устройство.',
+    limitOne: 'Тариф 1 месяц даёт 2 VPN устройства.',
+    limitThree: 'Тариф 3 месяца даёт 3 VPN устройства.',
+    limitYear: 'Тариф 12 месяцев даёт 5 VPN устройств.',
+    connectWalletDevices: 'Подключи кошелёк, чтобы увидеть устройства.',
+    loadingDevices: 'Загрузка устройств...',
+    noIp: 'Нет IP',
+    privateVpnAccess: 'Приватный VPN-доступ',
+    stableMobileConfig: 'Стабильный мобильный конфиг',
+    autoDisabledExpires: 'Автоотключение при окончании доступа',
+    installProtocol: 'Установить',
+    confConfig: '.conf конфиг',
+    awgProfile: '.awg профиль',
+    referralTitle: 'Реферальная программа',
+    referralSubtitle: 'Приглашай друзей и зарабатывай с платных VPN-подписок.',
+    referralReward: '5 активных платных рефералов → 1 год VPN бесплатно',
+    totalReferrals: 'Всего рефералов',
+    activePaid: 'Активных платных',
+    earnedTon: 'Заработано TON',
+    freeYearProgress: 'Прогресс к бесплатному году',
+    inviteFriend: 'Пригласить друга',
+    copy: 'Копировать',
+    withdrawals: 'Вывод от 1 TON по заявке и ручному одобрению админом.',
+    referralShareText: 'Подключайся к PLANKTON VPN и получай приватный VPN-доступ через TON / $PLANKTON.',
+    copied: 'Реферальная ссылка скопирована',
+    copyFailed: 'Не удалось скопировать ссылку',
+    connectWalletFirst: 'Сначала подключи кошелёк',
+    deleteConfirm: 'Удалить это VPN устройство?',
+    deleteFailed: 'Не удалось удалить устройство',
+    paymentWalletMissing: 'Кошелёк для оплаты не указан',
+    paymentCreationFailed: 'Не удалось создать платеж',
+    planktonWalletMissing: 'Не удалось найти твой PLANKTON wallet. Убедись, что у тебя есть $PLANKTON.',
+    planktonPaymentConfirmed: '$PLANKTON платеж подтверждён. VPN подписка активирована.',
+    tonPaymentConfirmed: 'TON платеж подтверждён. VPN подписка активирована.',
+    paymentPending: 'Платёж отправлен, но ещё не подтверждён. Подожди немного и проверь доступ снова.',
+    paymentFailed: 'Платёж отменён или не прошёл',
+    vpnCreateFailed: 'Не удалось создать VPN конфиг',
+    deviceLimitTitle: 'Достигнут лимит устройств.',
+    currentLimit: 'Текущий лимит',
+    usedDevices: 'Использовано',
+    upgradeMarket: 'Открой маркет, чтобы улучшить тариф и добавить устройства.',
+    configReady: 'Конфиг готов',
+    error: 'Ошибка',
   },
   ua: {
     title: 'PLANKTON VPN',
-    subtitle: 'Приватний WireGuard VPN доступ для холдерів $PLANKTON.',
+    subtitle: 'Приватний VPN-доступ для спільноти $PLANKTON.',
     hold: 'Тримай 1,000,000 $PLANKTON, щоб отримати безкоштовний VPN.',
     check: 'Перевірити доступ',
     checking: 'Перевірка...',
     active: 'VPN доступ активний',
     locked: 'Доступ закрито',
     buy: 'КУПИТИ $PLANKTON',
-    install: 'Встановити WireGuard',
+    install: 'Встановити',
     generate: 'Створити конфіг',
     download: 'Завантажити конфіг',
     home: 'Головна',
     vpn: 'VPN',
     guide: 'Гайд',
     profile: 'Профіль',
+    market: 'Маркет',
+    devices: 'Мої VPN пристрої',
+    noDevices: 'VPN пристроїв поки немає',
+    refresh: 'Оновити',
+    deleteDevice: 'Видалити',
+    activeDevice: 'Активно',
+    disabledDevice: 'Вимкнено',
+    expires: 'Закінчується',
+    openMarket: 'Відкрити маркет',
     links: 'Спільнота',
     channel: 'Telegram канал',
     chat: 'Telegram чат',
     twitter: 'X / Twitter',
     dashboard: 'Панель профілю',
     wallet: 'Гаманець',
+    notConnected: 'Не підключено',
+    statusLabel: 'СТАТУС',
+    telegramProfile: 'Telegram профіль',
     guideTitle: 'Як активувати VPN',
-    step1: 'Встанови офіційний застосунок WireGuard.',
-    step2: 'Створи конфіг Plankton VPN.',
-    step3: 'Відкрий WireGuard та імпортуй завантажений .conf файл.',
-    step4: 'Увімкни VPN-тунель.',
     wgOfficial: 'Відкрити WireGuard Official',
     plans: 'VPN тарифи',
     subActive: 'Підписка активна',
@@ -131,34 +320,118 @@ const TEXT = {
     wireguardDesc: 'Швидкий • Легкий • За замовчуванням',
     amneziaDesc: 'Кращий обхід • Антиблокування • Smart routing',
     comingSoon: 'Скоро',
+    marketIntro: 'Купуй додатковий VPN-доступ навіть якщо ти вже холдер. Платні тарифи дають більше пристроїв і довший доступ.',
+    month1: '1 місяць',
+    month3: '3 місяці',
+    month12: '12 місяців',
+    days30: '30 днів VPN-доступу',
+    days90: '90 днів VPN-доступу',
+    days365: '365 днів VPN-доступу',
+    devicesCount: 'пристрої',
+    bestOne: 'Найкраще для тесту PLANKTON VPN на телефоні та ноутбуці.',
+    bestThree: 'Оптимальний баланс для щоденного використання та кількох пристроїв.',
+    bestYear: 'Найкраща пропозиція для активних користувачів і довгого доступу.',
+    featureProtocols: 'WireGuard + Amnezia',
+    featureDevices: 'Мобільний + ПК',
+    featureExpiry: 'Автовимкнення після завершення доступу',
+    featureTelegram: 'Доступ прямо через Telegram',
+    deviceLimitLine: 'Ліміт пристроїв',
+    activeVpnDevices: 'активних VPN пристроїв',
+    protocolsIncluded: 'Включені протоколи: WireGuard за замовчуванням + Amnezia AWG профіль.',
+    payTon: 'Оплатити TON',
+    payPlankton: 'Оплатити $PLANKTON',
+    pricesPoweredBy: 'Ціни оновлюються через',
+    guideWireguardDesc: 'Швидкий, легкий та основний VPN-протокол.',
+    guideAmneziaDesc: 'Краще для обходу блокувань, антиблокінгу та AWG профілю.',
+    guideLimitsTitle: 'Ліміти пристроїв',
+    wgStep1: 'Встанови офіційний застосунок WireGuard.',
+    wgStep2: 'Відкрий вкладку VPN і вибери WireGuard.',
+    wgStep3: 'Створи та завантаж .conf файл.',
+    wgStep4: 'Імпортуй файл у WireGuard і увімкни тунель.',
+    amStep1: 'Встанови Amnezia VPN з офіційного сайту або app store.',
+    amStep2: 'Відкрий вкладку VPN і вибери Amnezia VPN.',
+    amStep3: 'Створи та завантаж .awg профіль.',
+    amStep4: 'Імпортуй .awg профіль в Amnezia і увімкни VPN.',
+    openAmnezia: 'Відкрити Amnezia Official',
+    limitHolder: 'Холдерський доступ дає 1 VPN пристрій.',
+    limitOne: 'Тариф 1 місяць дає 2 VPN пристрої.',
+    limitThree: 'Тариф 3 місяці дає 3 VPN пристрої.',
+    limitYear: 'Тариф 12 місяців дає 5 VPN пристроїв.',
+    connectWalletDevices: 'Підключи гаманець, щоб побачити пристрої.',
+    loadingDevices: 'Завантаження пристроїв...',
+    noIp: 'Немає IP',
+    privateVpnAccess: 'Приватний VPN-доступ',
+    stableMobileConfig: 'Стабільний мобільний конфіг',
+    autoDisabledExpires: 'Автовимкнення після завершення доступу',
+    installProtocol: 'Встановити',
+    confConfig: '.conf конфіг',
+    awgProfile: '.awg профіль',
+    referralTitle: 'Реферальна програма',
+    referralSubtitle: 'Запрошуй друзів і заробляй з платних VPN-підписок.',
+    referralReward: '5 активних платних рефералів → 1 рік VPN безкоштовно',
+    totalReferrals: 'Усього рефералів',
+    activePaid: 'Активних платних',
+    earnedTon: 'Зароблено TON',
+    freeYearProgress: 'Прогрес до безкоштовного року',
+    inviteFriend: 'Запросити друга',
+    copy: 'Копіювати',
+    withdrawals: 'Виведення від 1 TON за заявкою та ручним схваленням адміна.',
+    referralShareText: 'Підключайся до PLANKTON VPN і отримай приватний VPN-доступ через TON / $PLANKTON.',
+    copied: 'Реферальне посилання скопійовано',
+    copyFailed: 'Не вдалося скопіювати посилання',
+    connectWalletFirst: 'Спочатку підключи гаманець',
+    deleteConfirm: 'Видалити цей VPN пристрій?',
+    deleteFailed: 'Не вдалося видалити пристрій',
+    paymentWalletMissing: 'Гаманець для оплати не вказаний',
+    paymentCreationFailed: 'Не вдалося створити платіж',
+    planktonWalletMissing: 'Не вдалося знайти твій PLANKTON wallet. Переконайся, що маєш $PLANKTON.',
+    planktonPaymentConfirmed: '$PLANKTON платіж підтверджено. VPN підписку активовано.',
+    tonPaymentConfirmed: 'TON платіж підтверджено. VPN підписку активовано.',
+    paymentPending: 'Платіж відправлено, але ще не підтверджено. Зачекай трохи і перевір доступ знову.',
+    paymentFailed: 'Платіж скасовано або не пройшов',
+    vpnCreateFailed: 'Не вдалося створити VPN конфіг',
+    deviceLimitTitle: 'Досягнуто ліміт пристроїв.',
+    currentLimit: 'Поточний ліміт',
+    usedDevices: 'Використано',
+    upgradeMarket: 'Відкрий маркет, щоб покращити тариф і додати пристрої.',
+    configReady: 'Конфіг готовий',
+    error: 'Помилка',
   },
   zh: {
     title: 'PLANKTON VPN',
-    subtitle: '为 $PLANKTON 持有者提供的 WireGuard VPN。',
+    subtitle: '面向 $PLANKTON 社区的私密 VPN 访问。',
     hold: '持有 1,000,000 $PLANKTON 即可解锁免费 VPN。',
     check: '检查权限',
     checking: '检查中...',
     active: 'VPN 已激活',
     locked: '访问受限',
     buy: '购买 $PLANKTON',
-    install: '安装 WireGuard',
+    install: '安装',
     generate: '生成配置',
     download: '下载配置',
     home: '首页',
     vpn: 'VPN',
     guide: '指南',
     profile: '我的',
+    market: '市场',
+    devices: '我的 VPN 设备',
+    noDevices: '暂无 VPN 设备',
+    refresh: '刷新',
+    deleteDevice: '删除',
+    activeDevice: '已启用',
+    disabledDevice: '已禁用',
+    expires: '到期',
+    openMarket: '打开市场',
     links: '社区',
     channel: 'Telegram 频道',
     chat: 'Telegram 群聊',
     twitter: 'X / Twitter',
     dashboard: '个人面板',
     wallet: '钱包',
+    notConnected: '未连接',
+    statusLabel: '状态',
+    telegramProfile: 'Telegram 资料',
     guideTitle: '如何激活 VPN',
-    step1: '安装官方 WireGuard 应用。',
-    step2: '生成你的 Plankton VPN 配置。',
-    step3: '打开 WireGuard 并导入下载的 .conf 文件。',
-    step4: '开启 VPN 隧道。',
     wgOfficial: '打开 WireGuard 官网',
     plans: 'VPN 套餐',
     subActive: '订阅已激活',
@@ -166,6 +439,82 @@ const TEXT = {
     wireguardDesc: '快速 • 轻量 • 默认',
     amneziaDesc: '更好绕过 • 抗封锁 • 智能路由',
     comingSoon: '即将推出',
+    marketIntro: '即使你已经是持有者，也可以购买额外 VPN 权限。付费套餐可解锁更多设备和更长访问时间。',
+    month1: '1 个月',
+    month3: '3 个月',
+    month12: '12 个月',
+    days30: '30 天 VPN 访问',
+    days90: '90 天 VPN 访问',
+    days365: '365 天 VPN 访问',
+    devicesCount: '台设备',
+    bestOne: '适合在手机和笔记本上测试 PLANKTON VPN。',
+    bestThree: '适合日常使用和多设备的平衡选择。',
+    bestYear: '最划算，适合重度用户和长期访问。',
+    featureProtocols: 'WireGuard + Amnezia',
+    featureDevices: '手机 + 桌面端',
+    featureExpiry: '到期自动禁用',
+    featureTelegram: 'Telegram 原生访问',
+    deviceLimitLine: '设备限制',
+    activeVpnDevices: '台活跃 VPN 设备',
+    protocolsIncluded: '包含协议：默认 WireGuard + Amnezia AWG 配置。',
+    payTon: '支付 TON',
+    payPlankton: '支付 $PLANKTON',
+    pricesPoweredBy: '价格由以下服务提供',
+    guideWireguardDesc: '快速、轻量、默认 VPN 协议。',
+    guideAmneziaDesc: '更适合绕过封锁、抗干扰和 AWG 配置。',
+    guideLimitsTitle: '设备限制',
+    wgStep1: '安装官方 WireGuard 应用。',
+    wgStep2: '打开 VPN 标签并选择 WireGuard。',
+    wgStep3: '生成并下载 .conf 文件。',
+    wgStep4: '将文件导入 WireGuard 并开启隧道。',
+    amStep1: '从官网或应用商店安装 Amnezia VPN。',
+    amStep2: '打开 VPN 标签并选择 Amnezia VPN。',
+    amStep3: '生成并下载 .awg 配置。',
+    amStep4: '将 .awg 配置导入 Amnezia 并开启 VPN。',
+    openAmnezia: '打开 Amnezia 官网',
+    limitHolder: '持有者权限提供 1 台 VPN 设备。',
+    limitOne: '1 个月套餐提供 2 台 VPN 设备。',
+    limitThree: '3 个月套餐提供 3 台 VPN 设备。',
+    limitYear: '12 个月套餐提供 5 台 VPN 设备。',
+    connectWalletDevices: '连接钱包以查看你的设备。',
+    loadingDevices: '正在加载设备...',
+    noIp: '无 IP',
+    privateVpnAccess: '私密 VPN 访问',
+    stableMobileConfig: '稳定移动端配置',
+    autoDisabledExpires: '访问到期自动禁用',
+    installProtocol: '安装',
+    confConfig: '.conf 配置',
+    awgProfile: '.awg 配置',
+    referralTitle: '推荐计划',
+    referralSubtitle: '邀请朋友并从付费 VPN 订阅中赚取奖励。',
+    referralReward: '5 个活跃付费推荐 → 免费 1 年 VPN',
+    totalReferrals: '推荐总数',
+    activePaid: '活跃付费',
+    earnedTon: '已赚 TON',
+    freeYearProgress: '免费一年进度',
+    inviteFriend: '邀请朋友',
+    copy: '复制',
+    withdrawals: '1 TON 起提现，由管理员手动审核。',
+    referralShareText: '加入 PLANKTON VPN，用 TON / $PLANKTON 解锁私密 VPN 访问。',
+    copied: '推荐链接已复制',
+    copyFailed: '无法复制链接',
+    connectWalletFirst: '请先连接钱包',
+    deleteConfirm: '删除这个 VPN 设备？',
+    deleteFailed: '删除设备失败',
+    paymentWalletMissing: '支付钱包未配置',
+    paymentCreationFailed: '创建支付失败',
+    planktonWalletMissing: '找不到你的 PLANKTON 钱包。请确认你持有 $PLANKTON。',
+    planktonPaymentConfirmed: '$PLANKTON 支付已确认。VPN 订阅已激活。',
+    tonPaymentConfirmed: 'TON 支付已确认。VPN 订阅已激活。',
+    paymentPending: '付款已发送但尚未确认。请稍等片刻后再次检查访问权限。',
+    paymentFailed: '付款已取消或失败',
+    vpnCreateFailed: '创建 VPN 配置失败',
+    deviceLimitTitle: '已达到设备限制。',
+    currentLimit: '当前限制',
+    usedDevices: '已使用',
+    upgradeMarket: '打开市场升级套餐并添加更多设备。',
+    configReady: '配置已准备好',
+    error: '错误',
   },
 }
 
@@ -210,6 +559,8 @@ export default function MiniAppClient() {
   const [forcePlans, setForcePlans] = useState(false)
   const [pricingData, setPricingData] = useState<any>(null)
   const [protocol, setProtocol] = useState<Protocol>('wireguard')
+  const [devices, setDevices] = useState<VpnDevice[]>([])
+  const [devicesLoading, setDevicesLoading] = useState(false)
 
   useEffect(() => {
     fetch('/api/pricing')
@@ -223,7 +574,7 @@ export default function MiniAppClient() {
     const urlParam = new URLSearchParams(window.location.search).get('startapp')
     const tgParam  = window.Telegram?.WebApp?.initDataUnsafe?.start_param
     if ((urlParam ?? tgParam) === 'plans') {
-      setTab('vpn')
+      setTab('market')
       setForcePlans(true)
     }
   }, [])
@@ -287,8 +638,72 @@ export default function MiniAppClient() {
   }, [])
 
   useEffect(() => {
-    if (wallet) checkAccess()
+    if (wallet) {
+      checkAccess()
+      loadDevices()
+    } else {
+      setDevices([])
+    }
   }, [wallet, lang])
+
+  async function loadDevices() {
+    if (!wallet) return
+
+    try {
+      setDevicesLoading(true)
+
+      const res = await fetch(`/api/vpn/devices?wallet=${encodeURIComponent(wallet)}`, {
+        cache: 'no-store',
+      })
+      const data = await res.json()
+
+      if (data.ok && Array.isArray(data.devices)) {
+        setDevices(data.devices)
+      } else {
+        setDevices([])
+      }
+    } catch (e) {
+      console.error('Load devices error:', e)
+      setDevices([])
+    }
+
+    setDevicesLoading(false)
+  }
+
+  async function deleteDevice(deviceId: string) {
+    if (!wallet) return
+
+    const ok = window.confirm(t.deleteConfirm)
+    if (!ok) return
+
+    try {
+      setDevicesLoading(true)
+
+      const res = await fetch('/api/vpn/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          wallet,
+          deviceId,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!data.ok) {
+        alert(data.error || t.deleteFailed)
+        setDevicesLoading(false)
+        return
+      }
+
+      await loadDevices()
+    } catch (e) {
+      console.error('Delete device error:', e)
+      alert(t.deleteFailed)
+    }
+
+    setDevicesLoading(false)
+  }
 
   async function checkAccess() {
     if (!wallet) return
@@ -316,7 +731,7 @@ export default function MiniAppClient() {
         setStatus(t.locked)
       }
     } catch {
-      setStatus('Error')
+      setStatus(t.error)
     }
 
     setLoading(false)
@@ -340,7 +755,17 @@ export default function MiniAppClient() {
   
       if (!data.ok || !data.device?.name) {
         console.error('VPN create error:', data)
-        alert(data.error || 'VPN config creation failed')
+
+        if (String(data.error || '').includes('Device limit reached')) {
+          alert(
+            `${t.deviceLimitTitle}\n\n${t.currentLimit}: ${data.limit || 1}\n${t.usedDevices}: ${data.used || 0}\n\n${t.upgradeMarket}`,
+          )
+          setTab('market')
+        } else {
+          alert(data.error || t.vpnCreateFailed)
+        }
+
+        setStatus(data.error || t.vpnCreateFailed)
         setLoading(false)
         return
       }
@@ -348,11 +773,12 @@ export default function MiniAppClient() {
       const deviceName = encodeURIComponent(data.device.name)
   
       setConfigUrl(`/api/vpn/download?name=${deviceName}`)
-      setStatus('Config ready')
+      setStatus(t.configReady)
+      await loadDevices()
     } catch (e) {
       console.error(e)
-      setStatus('Error')
-      alert('VPN config creation failed')
+      setStatus(t.error)
+      alert(t.vpnCreateFailed)
     }
   
     setLoading(false)
@@ -369,7 +795,7 @@ export default function MiniAppClient() {
       const jwData = await jwRes.json()
 
       if (!jwData.ok || !jwData.jettonWallet) {
-        alert('Could not find your PLANKTON wallet. Make sure you hold some $PLANKTON.')
+        alert(t.planktonWalletMissing)
         setLoading(false)
         return
       }
@@ -382,7 +808,7 @@ export default function MiniAppClient() {
       const created = await createRes.json()
 
       if (!created.payment?.id) {
-        alert('Payment creation failed')
+        alert(t.paymentCreationFailed)
         setLoading(false)
         return
       }
@@ -418,14 +844,14 @@ export default function MiniAppClient() {
       })
 
       if (verified) {
-        alert('$PLANKTON payment confirmed. VPN subscription activated.')
+        alert(t.planktonPaymentConfirmed)
         await checkAccess()
       } else {
-        alert('Payment sent but not confirmed yet. Wait a moment and check your access again.')
+        alert(t.paymentPending)
       }
     } catch (e) {
       console.error(e)
-      alert('Payment cancelled or failed')
+      alert(t.paymentFailed)
     }
 
     setLoading(false)
@@ -436,7 +862,7 @@ export default function MiniAppClient() {
 
     const receiver = process.env.NEXT_PUBLIC_PAYMENT_WALLET
     if (!receiver) {
-      alert('Payment wallet missing')
+      alert(t.paymentWalletMissing)
       return
     }
 
@@ -451,7 +877,7 @@ export default function MiniAppClient() {
       const created = await createRes.json()
 
       if (!created.payment?.id) {
-        alert('Payment creation failed')
+        alert(t.paymentCreationFailed)
         setLoading(false)
         return
       }
@@ -480,14 +906,14 @@ export default function MiniAppClient() {
       })
 
       if (verified) {
-        alert('TON payment confirmed. VPN subscription activated.')
+        alert(t.tonPaymentConfirmed)
         await checkAccess()
       } else {
-        alert('Payment sent but not confirmed yet. Wait a moment and check your access again.')
+        alert(t.paymentPending)
       }
     } catch (e) {
       console.error(e)
-      alert('Payment cancelled or failed')
+      alert(t.paymentFailed)
     }
 
     setLoading(false)
@@ -500,7 +926,7 @@ export default function MiniAppClient() {
       <div style={frame}>
         <div style={wrap}>
           <div style={card}>
-            <Header lang={lang} setLang={setLang} />
+            <Header lang={lang} setLang={setLang} setTab={setTab} t={t} />
 
             {tab === 'home' && (
               <>
@@ -527,7 +953,7 @@ export default function MiniAppClient() {
                     <div style={stats}>
                       <InfoCard label="$PLANKTON" value={balance.toLocaleString()} />
                       <InfoCard
-                        label="STATUS"
+                        label={t.statusLabel}
                         value={status}
                         color={hasAccess ? '#39f58f' : '#ff6b6b'}
                       />
@@ -539,13 +965,9 @@ export default function MiniAppClient() {
                           {t.buy}
                         </a>
 
-                        <PlansBlock
-                          t={t}
-                          loading={loading}
-                          createPlan={createPlan}
-                          payWithTon={payWithTon}
-                          pricingData={pricingData}
-                        />
+                        <button type="button" onClick={() => setTab('market')} style={blueBtn}>
+                          {t.openMarket}
+                        </button>
                       </>
                     )}
 
@@ -557,77 +979,36 @@ export default function MiniAppClient() {
                           setProtocol={setProtocol}
                         />
 
-                        {protocol === 'wireguard' && (
-                          <>
-                            <div style={wgHead}>
-                              <div style={wgLogoBox}>
-                                <img src="/assets/wireguard-logo.png" alt="WireGuard" style={wgLogo} />
-                              </div>
-
-                              <div>
-                                <div style={wgTitle}>WireGuard</div>
-                                <div style={muted}>Official VPN protocol</div>
-                              </div>
-                            </div>
-
-                            <a href={WIREGUARD_URL} target="_blank" style={outlineBtn}>
-                              ⬇ {t.install}
-                            </a>
-
-                            <button onClick={generateConfig} disabled={loading} style={greenBtn}>
-                              ⚙ {loading ? t.checking : t.generate}
-                            </button>
-
-                            {configUrl && (
-                              <a href={configUrl} target="_blank" style={downloadBtn}>
-                                📄 {t.download}
-                              </a>
-                            )}
-                          </>
-                        )}
-
-                        {protocol === 'amnezia' && (
-                          <>
-                            <div style={amneziaBox}>
-                              <div style={amneziaLogoBox}>
-                                <img
-                                  src="/amnezia-logo.png"
-                                  alt="Amnezia VPN"
-                                  style={amneziaLogo}
-                                />
-                              </div>
-
-                              <div>
-                                <div style={wgTitle}>Amnezia VPN</div>
-                                <div style={muted}>{t.amneziaDesc}</div>
-                                <div style={comingSoon}>AWG profile</div>
-                              </div>
-                            </div>
-
-                            <a
-                              href="https://amnezia.org/"
-                              target="_blank"
-                              rel="noopener"
-                              style={outlineBtn}
-                            >
-                              ⬇ Install Amnezia VPN
-                            </a>
-
-                            <button onClick={generateConfig} disabled={loading} style={greenBtn}>
-                              ⚙ {loading ? t.checking : t.generate}
-                            </button>
-
-                            {configUrl && (
-                              <a href={configUrl} target="_blank" style={downloadBtn}>
-                                📄 {t.download}
-                              </a>
-                            )}
-                          </>
-                        )}
+                        <ProtocolSetupPanel
+                          protocol={protocol}
+                          t={t}
+                          loading={loading}
+                          generateConfig={generateConfig}
+                          configUrl={configUrl}
+                        />
                       </div>
                     )}
                   </>
                 )}
+              </>
+            )}
+
+            {tab === 'market' && (
+              <>
+                <Hero t={t} />
+
+                <div style={walletCard}>
+                  <TonConnectButton />
+                  {wallet && <div style={walletText}>{wallet}</div>}
+                </div>
+
+                <PlansBlock
+                  t={t}
+                  loading={loading}
+                  createPlan={createPlan}
+                  payWithTon={payWithTon}
+                  pricingData={pricingData}
+                />
               </>
             )}
 
@@ -641,6 +1022,10 @@ export default function MiniAppClient() {
                 balance={balance}
                 status={status}
                 hasAccess={hasAccess}
+                devices={devices}
+                devicesLoading={devicesLoading}
+                loadDevices={loadDevices}
+                deleteDevice={deleteDevice}
               />
             )}
           </div>
@@ -650,7 +1035,7 @@ export default function MiniAppClient() {
       <div style={nav}>
         <NavBtn active={tab === 'home'} label={t.home} icon="⌂" onClick={() => setTab('home')} />
         <NavBtn active={tab === 'vpn'} label={t.vpn} icon="◆" onClick={() => setTab('vpn')} />
-        <NavBtn active={tab === 'guide'} label={t.guide} icon="?" onClick={() => setTab('guide')} />
+        <NavBtn active={tab === 'market'} label={t.market} icon="◇" onClick={() => setTab('market')} />
         <NavBtn active={tab === 'profile'} label={t.profile} icon="●" onClick={() => setTab('profile')} />
       </div>
     </div>
@@ -685,35 +1070,93 @@ function ProtocolSelector({ t, protocol, setProtocol }: any) {
 }
 
 function PlansBlock({ t, loading, createPlan, payWithTon, pricingData }: any) {
+  const [selectedPlan, setSelectedPlan] = useState('ONE_MONTH')
+
   const plans = [
-    { key: 'ONE_MONTH',     label: '1 Month',   tonUsd: 3,  planktonUsd: 2  },
-    { key: 'THREE_MONTHS',  label: '3 Months',  tonUsd: 7,  planktonUsd: 5  },
-    { key: 'TWELVE_MONTHS', label: '12 Months', tonUsd: 20, planktonUsd: 14 },
+    {
+      key: 'ONE_MONTH',
+      label: t.month1,
+      duration: t.days30,
+      devices: 2,
+      tonUsd: 3,
+      planktonUsd: 2,
+      bestFor: t.bestOne,
+    },
+    {
+      key: 'THREE_MONTHS',
+      label: t.month3,
+      duration: t.days90,
+      devices: 3,
+      tonUsd: 7,
+      planktonUsd: 5,
+      bestFor: t.bestThree,
+    },
+    {
+      key: 'TWELVE_MONTHS',
+      label: t.month12,
+      duration: t.days365,
+      devices: 5,
+      tonUsd: 20,
+      planktonUsd: 14,
+      bestFor: t.bestYear,
+    },
   ]
 
   return (
     <div style={setupCard}>
       <div style={sectionTitle}>{t.plans}</div>
+      <div style={marketIntro}>{t.marketIntro}</div>
 
-      {plans.map(({ key, label, tonUsd, planktonUsd }) => {
+      {plans.map(({ key, label, duration, devices, tonUsd, planktonUsd, bestFor }) => {
         const api = pricingData?.plans?.find((p: any) => p.plan === key)
-        const tonLine      = api ? `${api.tonDisplay} TON ≈ $${tonUsd}`           : `TON: $${tonUsd}`
-        const planktonLine = api ? `${api.planktonDisplay} $PLANKTON ≈ $${planktonUsd}` : `$PLANKTON: $${planktonUsd}`
+        const tonLine = api ? `${api.tonDisplay} TON ≈ $${tonUsd}` : `TON: $${tonUsd}`
+        const planktonLine = api
+          ? `${api.planktonDisplay} $PLANKTON ≈ $${planktonUsd}`
+          : `$PLANKTON: $${planktonUsd}`
+        const active = selectedPlan === key
 
         return (
-          <div key={key} style={planCard}>
-            <div>
-              <div style={planTitle}>{label}</div>
-              <div style={muted}>{tonLine}</div>
-              <div style={muted}>{planktonLine}</div>
+          <div
+            key={key}
+            onClick={() => setSelectedPlan(key)}
+            style={{ ...planCardPremium, ...(active ? planCardPremiumActive : {}) }}
+          >
+            <div style={planPremiumTop}>
+              <div>
+                <div style={planTitle}>{label}</div>
+                <div style={muted}>{duration}</div>
+              </div>
+              <div style={planDeviceBadge}>{devices} {t.devicesCount}</div>
             </div>
 
-            <div style={planButtons}>
+            <div style={planFeatureGrid}>
+              <div style={planFeature}>{t.featureProtocols}</div>
+              <div style={planFeature}>{t.featureDevices}</div>
+              <div style={planFeature}>{t.featureExpiry}</div>
+              <div style={planFeature}>{t.featureTelegram}</div>
+            </div>
+
+            {active && (
+              <div style={planDetailsBox}>
+                <div style={planDetailsText}>{bestFor}</div>
+                <div style={planDetailsText}>{t.deviceLimitLine}: {devices} {t.activeVpnDevices}.</div>
+                <div style={planDetailsText}>{t.protocolsIncluded}</div>
+              </div>
+            )}
+
+            <div style={planPriceBox}>
+              <div>
+                <div style={muted}>{tonLine}</div>
+                <div style={muted}>{planktonLine}</div>
+              </div>
+            </div>
+
+            <div style={planButtons} onClick={(e) => e.stopPropagation()}>
               <button disabled={loading} onClick={() => payWithTon(key)} style={smallGreenBtn}>
-                TON
+                {t.payTon}
               </button>
               <button disabled={loading} onClick={() => createPlan(key, 'PLANKTON')} style={smallBlueBtn}>
-                $PLANKTON
+                {t.payPlankton}
               </button>
             </div>
           </div>
@@ -721,7 +1164,7 @@ function PlansBlock({ t, loading, createPlan, payWithTon, pricingData }: any) {
       })}
 
       <div style={poweredBy}>
-        Prices powered by{' '}
+        {t.pricesPoweredBy}{' '}
         <a href="https://www.coingecko.com" target="_blank" rel="noopener" style={cgLink}>
           CoinGecko
         </a>
@@ -739,17 +1182,23 @@ function Splash() {
   )
 }
 
-function Header({ lang, setLang }: any) {
+function Header({ lang, setLang, setTab, t }: any) {
   return (
     <div style={topRow}>
       <div style={badge}>CEO PLANKTON</div>
 
-      <select value={lang} onChange={(e) => setLang(e.target.value)} style={select}>
-        <option value="en">🇺🇸 EN</option>
-        <option value="ru">🇷🇺 RU</option>
-        <option value="ua">🇺🇦 UA</option>
-        <option value="zh">🇨🇳 中文</option>
-      </select>
+      <div style={topActions}>
+        <button type="button" onClick={() => setTab('guide')} style={guideTopBtn}>
+          ? {t.guide}
+        </button>
+
+        <select value={lang} onChange={(e) => setLang(e.target.value)} style={select}>
+          <option value="en">🇺🇸 EN</option>
+          <option value="ru">🇷🇺 RU</option>
+          <option value="ua">🇺🇦 UA</option>
+          <option value="zh">🇨🇳 中文</option>
+        </select>
+      </div>
     </div>
   )
 }
@@ -797,14 +1246,37 @@ function Guide({ t }: any) {
     <div style={setupCard}>
       <div style={sectionTitle}>{t.guideTitle}</div>
 
-      <GuideStep n="1" text={t.step1} />
-      <GuideStep n="2" text={t.step2} />
-      <GuideStep n="3" text={t.step3} />
-      <GuideStep n="4" text={t.step4} />
+      <div style={guideProtocolCard}>
+        <div style={guideProtocolTitle}>WireGuard</div>
+        <div style={muted}>{t.guideWireguardDesc}</div>
+        <GuideStep n="1" text={t.wgStep1} />
+        <GuideStep n="2" text={t.wgStep2} />
+        <GuideStep n="3" text={t.wgStep3} />
+        <GuideStep n="4" text={t.wgStep4} />
+        <a href={WIREGUARD_URL} target="_blank" style={downloadBtn}>
+          ⬇ {t.wgOfficial}
+        </a>
+      </div>
 
-      <a href={WIREGUARD_URL} target="_blank" style={downloadBtn}>
-        ⬇ {t.wgOfficial}
-      </a>
+      <div style={guideProtocolCard}>
+        <div style={guideProtocolTitle}>Amnezia VPN</div>
+        <div style={muted}>{t.guideAmneziaDesc}</div>
+        <GuideStep n="1" text={t.amStep1} />
+        <GuideStep n="2" text={t.amStep2} />
+        <GuideStep n="3" text={t.amStep3} />
+        <GuideStep n="4" text={t.amStep4} />
+        <a href="https://amnezia.org/" target="_blank" rel="noopener" style={downloadBtn}>
+          ⬇ {t.openAmnezia}
+        </a>
+      </div>
+
+      <div style={guideProtocolCard}>
+        <div style={guideProtocolTitle}>{t.guideLimitsTitle}</div>
+        <GuideStep n="1" text={t.limitHolder} />
+        <GuideStep n="2" text={t.limitOne} />
+        <GuideStep n="3" text={t.limitThree} />
+        <GuideStep n="4" text={t.limitYear} />
+      </div>
     </div>
   )
 }
@@ -818,7 +1290,7 @@ function GuideStep({ n, text }: any) {
   )
 }
 
-function Profile({ t, telegramUser, wallet, balance, status, hasAccess }: any) {
+function Profile({ t, telegramUser, wallet, balance, status, hasAccess, devices, devicesLoading, loadDevices, deleteDevice }: any) {
   const name =
     telegramUser?.username
       ? `@${telegramUser.username}`
@@ -840,7 +1312,7 @@ function Profile({ t, telegramUser, wallet, balance, status, hasAccess }: any) {
 
         <div>
           <div style={profileName}>{name}</div>
-          <div style={muted}>Telegram profile</div>
+          <div style={muted}>{t.telegramProfile}</div>
         </div>
       </div>
 
@@ -851,8 +1323,224 @@ function Profile({ t, telegramUser, wallet, balance, status, hasAccess }: any) {
 
       <div style={profileBlock}>
         <div style={profileLabel}>{t.wallet}</div>
-        <div style={profileValue}>{wallet || 'Not connected'}</div>
+        <div style={profileValue}>{wallet || t.notConnected}</div>
       </div>
+
+      <MyVpnDevices
+        t={t}
+        wallet={wallet}
+        devices={devices}
+        devicesLoading={devicesLoading}
+        loadDevices={loadDevices}
+        deleteDevice={deleteDevice}
+      />
+
+      <ReferralProgram wallet={wallet} t={t} />
+    </div>
+  )
+}
+
+function MyVpnDevices({ t, wallet, devices, devicesLoading, loadDevices, deleteDevice }: any) {
+  return (
+    <div style={devicesWrap}>
+      <div style={devicesHeader}>
+        <div style={sectionTitle}>{t.devices}</div>
+
+        {wallet && (
+          <button type="button" onClick={loadDevices} disabled={devicesLoading} style={refreshBtn}>
+            ↻
+          </button>
+        )}
+      </div>
+
+      {!wallet && <div style={emptyDevices}>{t.connectWalletDevices}</div>}
+
+      {wallet && devicesLoading && devices.length === 0 && (
+        <div style={emptyDevices}>{t.loadingDevices}</div>
+      )}
+
+      {wallet && !devicesLoading && devices.length === 0 && (
+        <div style={emptyDevices}>{t.noDevices}</div>
+      )}
+
+      {wallet && devices.map((device: VpnDevice) => {
+        const deviceProtocol = device.protocol === 'amnezia' ? 'Amnezia' : 'WireGuard'
+        const deviceFile = `/api/vpn/download?name=${encodeURIComponent(device.name)}`
+        const expiresAt = device.expiresAt
+          ? new Date(device.expiresAt).toLocaleDateString()
+          : '—'
+
+        return (
+          <div key={device.id} style={deviceCard}>
+            <div style={deviceTop}>
+              <div>
+                <div style={deviceName}>{device.name}</div>
+                <div style={deviceMeta}>{deviceProtocol} • {device.address || t.noIp}</div>
+              </div>
+
+              <div
+                style={{
+                  ...deviceStatus,
+                  color: device.enabled ? '#39f58f' : '#ff6b6b',
+                  borderColor: device.enabled ? 'rgba(57,245,143,.35)' : 'rgba(255,107,107,.35)',
+                }}
+              >
+                {device.enabled ? t.activeDevice : t.disabledDevice}
+              </div>
+            </div>
+
+            <div style={deviceExpire}>{t.expires}: {expiresAt}</div>
+
+            <div style={deviceActions}>
+              <a href={deviceFile} target="_blank" style={deviceDownloadBtn}>
+                📄 {t.download}
+              </a>
+
+              <button
+                type="button"
+                onClick={() => deleteDevice(device.id)}
+                disabled={devicesLoading}
+                style={deviceDeleteBtn}
+              >
+                🗑 {t.deleteDevice}
+              </button>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+
+function ProtocolSetupPanel({ protocol, t, loading, generateConfig, configUrl }: any) {
+  const isAmnezia = protocol === 'amnezia'
+  const title = isAmnezia ? 'Amnezia VPN' : 'WireGuard'
+  const desc = isAmnezia ? t.amneziaDesc : t.wireguardDesc
+  const installUrl = isAmnezia ? 'https://amnezia.org/' : WIREGUARD_URL
+  const fileType = isAmnezia ? t.awgProfile : t.confConfig
+  const logo = isAmnezia ? '/amnezia-logo.png' : '/assets/wireguard-logo.png'
+
+  return (
+    <div style={protocolSetupCard}>
+      <div style={protocolSetupHead}>
+        <div style={protocolLogoBox}>
+          <img src={logo} alt={title} style={protocolLogo} />
+        </div>
+
+        <div>
+          <div style={wgTitle}>{title}</div>
+          <div style={muted}>{desc}</div>
+          <div style={protocolBadge}>{fileType}</div>
+        </div>
+      </div>
+
+      <div style={protocolFeatureGrid}>
+        <div style={protocolFeature}>{t.privateVpnAccess}</div>
+        <div style={protocolFeature}>{t.stableMobileConfig}</div>
+        <div style={protocolFeature}>{t.autoDisabledExpires}</div>
+      </div>
+
+      <a href={installUrl} target="_blank" rel="noopener" style={outlineBtn}>
+        ⬇ {t.installProtocol} {title}
+      </a>
+
+      <button onClick={generateConfig} disabled={loading} style={greenBtn}>
+        ⚙ {loading ? t.checking : t.generate}
+      </button>
+
+      {configUrl && (
+        <a href={configUrl} target="_blank" style={downloadBtn}>
+          📄 {t.download}
+        </a>
+      )}
+    </div>
+  )
+}
+
+function ReferralProgram({ wallet, t }: any) {
+  const activePaidRefs = 0
+  const totalRefs = 0
+  const earnedTon = 0
+  const freeYearTarget = 5
+  const progress = Math.min(activePaidRefs, freeYearTarget)
+  const referralCode = wallet ? wallet.slice(0, 10).replace(/[^a-zA-Z0-9_-]/g, '') : 'connect_wallet'
+  const referralLink = `https://t.me/${BOT_USERNAME}?startapp=ref_${referralCode}`
+  const shareText = t.referralShareText
+
+  async function copyReferral() {
+    if (!wallet) {
+      alert(t.connectWalletFirst)
+      return
+    }
+
+    try {
+      await navigator.clipboard.writeText(referralLink)
+      alert(t.copied)
+    } catch {
+      alert(t.copyFailed)
+    }
+  }
+
+  function shareReferral() {
+    if (!wallet) {
+      alert(t.connectWalletFirst)
+      return
+    }
+
+    const url = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`
+    window.open(url, '_blank')
+  }
+
+  return (
+    <div style={referralCard}>
+      <div style={referralTop}>
+        <div>
+          <div style={sectionTitle}>{t.referralTitle}</div>
+          <div style={muted}>{t.referralSubtitle}</div>
+        </div>
+        <div style={referralBadge}>10%</div>
+      </div>
+
+      <div style={referralRewardPill}>{t.referralReward}</div>
+
+      <div style={referralStatsGrid}>
+        <div style={referralStatBox}>
+          <div style={referralStatValue}>{totalRefs}</div>
+          <div style={referralStatLabel}>{t.totalReferrals}</div>
+        </div>
+        <div style={referralStatBox}>
+          <div style={referralStatValue}>{activePaidRefs}</div>
+          <div style={referralStatLabel}>{t.activePaid}</div>
+        </div>
+        <div style={referralStatBox}>
+          <div style={referralStatValue}>{earnedTon}</div>
+          <div style={referralStatLabel}>{t.earnedTon}</div>
+        </div>
+      </div>
+
+      <div style={progressWrap}>
+        <div style={progressTopLine}>
+          <span>{t.freeYearProgress}</span>
+          <span>{progress}/{freeYearTarget}</span>
+        </div>
+        <div style={progressSlots}>
+          {Array.from({ length: freeYearTarget }).map((_, i) => (
+            <div key={i} style={{ ...progressSlot, ...(i < progress ? progressSlotActive : {}) }} />
+          ))}
+        </div>
+      </div>
+
+      <div style={referralActions}>
+        <button type="button" onClick={shareReferral} style={referralShareBtn}>
+          {t.inviteFriend}
+        </button>
+        <button type="button" onClick={copyReferral} style={referralCopyBtn}>
+          {t.copy}
+        </button>
+      </div>
+
+      <div style={referralSmallText}>{t.withdrawals}</div>
     </div>
   )
 }
@@ -947,6 +1635,22 @@ const topRow: React.CSSProperties = {
   justifyContent: 'space-between',
   alignItems: 'center',
   marginBottom: 14,
+}
+
+const topActions: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+}
+
+const guideTopBtn: React.CSSProperties = {
+  border: '1px solid rgba(255,255,255,.12)',
+  background: 'rgba(255,255,255,.06)',
+  color: '#fff',
+  borderRadius: 14,
+  padding: '8px 10px',
+  fontWeight: 900,
+  fontSize: 12,
 }
 
 const badge: React.CSSProperties = {
@@ -1380,6 +2084,395 @@ const profileValue: React.CSSProperties = {
   fontSize: 12,
   lineHeight: 1.4,
   wordBreak: 'break-all',
+}
+
+const devicesWrap: React.CSSProperties = {
+  marginTop: 14,
+}
+
+const devicesHeader: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 10,
+}
+
+const refreshBtn: React.CSSProperties = {
+  width: 38,
+  height: 38,
+  borderRadius: 14,
+  border: '1px solid rgba(255,255,255,.12)',
+  background: 'rgba(255,255,255,.06)',
+  color: '#50d4ff',
+  fontWeight: 1000,
+  fontSize: 18,
+}
+
+const emptyDevices: React.CSSProperties = {
+  borderRadius: 18,
+  padding: 14,
+  background: 'rgba(255,255,255,.045)',
+  border: '1px solid rgba(255,255,255,.07)',
+  color: '#8fa3b8',
+  fontSize: 13,
+  fontWeight: 800,
+}
+
+const deviceCard: React.CSSProperties = {
+  borderRadius: 20,
+  padding: 14,
+  background: 'rgba(255,255,255,.055)',
+  border: '1px solid rgba(255,255,255,.08)',
+  marginBottom: 10,
+}
+
+const deviceTop: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'flex-start',
+  gap: 10,
+}
+
+const deviceName: React.CSSProperties = {
+  fontSize: 15,
+  fontWeight: 1000,
+  color: '#fff',
+  wordBreak: 'break-word',
+}
+
+const deviceMeta: React.CSSProperties = {
+  marginTop: 5,
+  color: '#8fa3b8',
+  fontSize: 12,
+  fontWeight: 800,
+}
+
+const deviceStatus: React.CSSProperties = {
+  flexShrink: 0,
+  border: '1px solid rgba(57,245,143,.35)',
+  borderRadius: 999,
+  padding: '6px 9px',
+  fontSize: 11,
+  fontWeight: 1000,
+  background: 'rgba(0,0,0,.18)',
+}
+
+const deviceExpire: React.CSSProperties = {
+  marginTop: 10,
+  color: '#77889a',
+  fontSize: 12,
+  fontWeight: 800,
+}
+
+const deviceActions: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: 8,
+  marginTop: 12,
+}
+
+const deviceDownloadBtn: React.CSSProperties = {
+  minHeight: 42,
+  borderRadius: 14,
+  background: 'linear-gradient(90deg,#0098ea,#54d8ff)',
+  color: '#00111d',
+  textDecoration: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontWeight: 1000,
+  fontSize: 13,
+}
+
+const deviceDeleteBtn: React.CSSProperties = {
+  minHeight: 42,
+  border: 0,
+  borderRadius: 14,
+  background: 'rgba(255,107,107,.14)',
+  color: '#ff8d8d',
+  fontWeight: 1000,
+  fontSize: 13,
+}
+
+
+const marketIntro: React.CSSProperties = {
+  color: '#8fa3b8',
+  fontSize: 13,
+  fontWeight: 800,
+  lineHeight: 1.35,
+  marginBottom: 12,
+}
+
+const planCardPremium: React.CSSProperties = {
+  borderRadius: 22,
+  padding: 14,
+  background: 'rgba(255,255,255,.055)',
+  border: '1px solid rgba(255,255,255,.08)',
+  marginBottom: 12,
+  cursor: 'pointer',
+}
+
+const planCardPremiumActive: React.CSSProperties = {
+  border: '1px solid rgba(80,212,255,.65)',
+  boxShadow: '0 0 24px rgba(0,152,234,.15)',
+  background: 'linear-gradient(180deg,rgba(0,152,234,.15),rgba(255,255,255,.055))',
+}
+
+const planPremiumTop: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'flex-start',
+  justifyContent: 'space-between',
+  gap: 10,
+}
+
+const planDeviceBadge: React.CSSProperties = {
+  flexShrink: 0,
+  borderRadius: 999,
+  padding: '6px 10px',
+  background: 'rgba(24,245,138,.12)',
+  color: '#55f7a0',
+  fontSize: 11,
+  fontWeight: 1000,
+  border: '1px solid rgba(24,245,138,.25)',
+}
+
+const planFeatureGrid: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: 8,
+  marginTop: 12,
+}
+
+const planFeature: React.CSSProperties = {
+  borderRadius: 14,
+  padding: '9px 10px',
+  background: 'rgba(0,0,0,.16)',
+  color: '#b7c8dc',
+  fontSize: 11,
+  fontWeight: 850,
+}
+
+const planDetailsBox: React.CSSProperties = {
+  marginTop: 12,
+  borderRadius: 16,
+  padding: 12,
+  background: 'rgba(0,152,234,.10)',
+  border: '1px solid rgba(80,212,255,.15)',
+}
+
+const planDetailsText: React.CSSProperties = {
+  color: '#b7c8dc',
+  fontSize: 12,
+  fontWeight: 800,
+  lineHeight: 1.35,
+  marginBottom: 5,
+}
+
+const planPriceBox: React.CSSProperties = {
+  marginTop: 12,
+}
+
+const protocolSetupCard: React.CSSProperties = {
+  borderRadius: 24,
+  padding: 14,
+  background: 'rgba(0,152,234,.10)',
+  border: '1px solid rgba(80,212,255,.18)',
+}
+
+const protocolSetupHead: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 14,
+  marginBottom: 14,
+}
+
+const protocolLogoBox: React.CSSProperties = {
+  width: 78,
+  height: 78,
+  minWidth: 78,
+  borderRadius: 24,
+  overflow: 'hidden',
+  background: 'rgba(255,255,255,.92)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}
+
+const protocolLogo: React.CSSProperties = {
+  width: 62,
+  height: 62,
+  objectFit: 'contain',
+  display: 'block',
+}
+
+const protocolBadge: React.CSSProperties = {
+  display: 'inline-flex',
+  marginTop: 9,
+  padding: '6px 10px',
+  borderRadius: 999,
+  background: 'rgba(255,255,255,.08)',
+  color: '#50d4ff',
+  fontSize: 11,
+  fontWeight: 1000,
+}
+
+const protocolFeatureGrid: React.CSSProperties = {
+  display: 'grid',
+  gap: 8,
+  marginBottom: 12,
+}
+
+const protocolFeature: React.CSSProperties = {
+  borderRadius: 14,
+  padding: '10px 12px',
+  background: 'rgba(0,0,0,.16)',
+  color: '#b7c8dc',
+  fontSize: 12,
+  fontWeight: 850,
+}
+
+const guideProtocolCard: React.CSSProperties = {
+  borderRadius: 22,
+  padding: 14,
+  background: 'rgba(255,255,255,.045)',
+  border: '1px solid rgba(255,255,255,.08)',
+  marginBottom: 12,
+}
+
+const guideProtocolTitle: React.CSSProperties = {
+  fontSize: 18,
+  fontWeight: 1000,
+  marginBottom: 6,
+}
+
+const referralCard: React.CSSProperties = {
+  marginTop: 14,
+  borderRadius: 24,
+  padding: 16,
+  background: 'linear-gradient(180deg,rgba(0,152,234,.13),rgba(255,255,255,.05))',
+  border: '1px solid rgba(80,212,255,.18)',
+}
+
+const referralTop: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  gap: 12,
+  alignItems: 'flex-start',
+}
+
+const referralBadge: React.CSSProperties = {
+  width: 54,
+  height: 54,
+  borderRadius: 18,
+  background: 'linear-gradient(135deg,#19d47b,#54d8ff)',
+  color: '#00111d',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontWeight: 1000,
+  fontSize: 18,
+}
+
+const referralRewardPill: React.CSSProperties = {
+  marginTop: 12,
+  borderRadius: 999,
+  padding: '10px 12px',
+  background: 'rgba(24,245,138,.10)',
+  border: '1px solid rgba(24,245,138,.22)',
+  color: '#55f7a0',
+  fontSize: 12,
+  fontWeight: 1000,
+}
+
+const referralStatsGrid: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(3,1fr)',
+  gap: 8,
+  marginTop: 12,
+}
+
+const referralStatBox: React.CSSProperties = {
+  borderRadius: 18,
+  padding: 12,
+  background: 'rgba(0,0,0,.17)',
+  border: '1px solid rgba(255,255,255,.07)',
+}
+
+const referralStatValue: React.CSSProperties = {
+  fontSize: 20,
+  fontWeight: 1000,
+}
+
+const referralStatLabel: React.CSSProperties = {
+  marginTop: 5,
+  color: '#8fa3b8',
+  fontSize: 10,
+  fontWeight: 900,
+  lineHeight: 1.2,
+}
+
+const progressWrap: React.CSSProperties = {
+  marginTop: 13,
+}
+
+const progressTopLine: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  color: '#b7c8dc',
+  fontSize: 12,
+  fontWeight: 900,
+  marginBottom: 8,
+}
+
+const progressSlots: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(5,1fr)',
+  gap: 7,
+}
+
+const progressSlot: React.CSSProperties = {
+  height: 14,
+  borderRadius: 999,
+  background: 'rgba(255,255,255,.08)',
+  border: '1px solid rgba(255,255,255,.08)',
+}
+
+const progressSlotActive: React.CSSProperties = {
+  background: 'linear-gradient(90deg,#19d47b,#67ffae)',
+}
+
+const referralActions: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1fr 82px',
+  gap: 10,
+  marginTop: 14,
+}
+
+const referralShareBtn: React.CSSProperties = {
+  height: 52,
+  border: 0,
+  borderRadius: 18,
+  background: 'linear-gradient(90deg,#19d47b,#67ffae)',
+  color: '#00120a',
+  fontWeight: 1000,
+  fontSize: 16,
+}
+
+const referralCopyBtn: React.CSSProperties = {
+  height: 52,
+  border: 0,
+  borderRadius: 18,
+  background: 'linear-gradient(90deg,#0098ea,#54d8ff)',
+  color: '#00111d',
+  fontWeight: 1000,
+  fontSize: 14,
+}
+
+const referralSmallText: React.CSSProperties = {
+  marginTop: 10,
+  color: '#77889a',
+  fontSize: 11,
+  fontWeight: 800,
 }
 
 const nav: React.CSSProperties = {

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { checkUserAccess } from '@/lib/access'
 import { generateAmneziaConfig } from '@/lib/vpn/generateAmneziaConfig'
+import { enhanceWireGuardConfig } from '@/lib/vpn/enhanceWireGuardConfig'
 
 const WG_URL = process.env.WG_EASY_URL
 const WG_PASSWORD = process.env.WG_EASY_PASSWORD
@@ -34,41 +35,53 @@ export async function GET(req: Request) {
     if (!name) {
       return NextResponse.json(
         { ok: false, error: 'Name required' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
     const device = await prisma.vpnDevice.findFirst({
-      where: { name },
+      where: {
+        name,
+      },
     })
 
     if (!device) {
       return NextResponse.json(
         { ok: false, error: 'Device not found' },
-        { status: 404 }
+        { status: 404 },
       )
     }
 
     if (device.expiresAt && new Date(device.expiresAt) < new Date()) {
       return NextResponse.json(
         { ok: false, error: 'VPN subscription expired' },
-        { status: 403 }
+        { status: 403 },
       )
     }
 
     if (!device.enabled) {
       return NextResponse.json(
         { ok: false, error: 'VPN device disabled' },
-        { status: 403 }
+        { status: 403 },
       )
     }
 
-    // Real-time access check — cron state may be stale if it hasn't run yet.
     const access = await checkUserAccess(device.wallet)
+
     if (!access.hasAccess) {
       return NextResponse.json(
-        { ok: false, error: 'No active subscription or insufficient PLANKTON balance' },
-        { status: 403 }
+        {
+          ok: false,
+          error: 'No active subscription or insufficient PLANKTON balance',
+        },
+        { status: 403 },
+      )
+    }
+
+    if (!device.clientId) {
+      return NextResponse.json(
+        { ok: false, error: 'VPN clientId missing' },
+        { status: 500 },
       )
     }
 
@@ -80,29 +93,32 @@ export async function GET(req: Request) {
         headers: {
           Cookie: cookie,
         },
-      }
+      },
     )
 
     if (!configRes.ok) {
       const text = await configRes.text()
+
       return NextResponse.json(
         { ok: false, error: text },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
-    const config = await configRes.text()
+    const rawConfig = await configRes.text()
+    const stableConfig = enhanceWireGuardConfig(rawConfig)
+
     const protocol = device.protocol || 'wireguard'
 
-const finalConfig =
-  protocol === 'amnezia'
-    ? generateAmneziaConfig(config)
-    : config
+    const finalConfig =
+      protocol === 'amnezia'
+        ? generateAmneziaConfig(stableConfig)
+        : stableConfig
 
-const filename =
-  protocol === 'amnezia'
-    ? `${device.name}.awg`
-    : `${device.name}.conf`
+    const filename =
+      protocol === 'amnezia'
+        ? `${device.name}.awg`
+        : `${device.name}.conf`
 
     return new Response(finalConfig, {
       headers: {
@@ -116,7 +132,7 @@ const filename =
         ok: false,
         error: e.message || 'Server error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
