@@ -6,7 +6,7 @@ import { TonConnectUIProvider } from '@tonconnect/ui-react'
 
 const TONCONNECT_MANIFEST_URL =
   process.env.NEXT_PUBLIC_TONCONNECT_MANIFEST_URL ||
-  'https://vpn.tokencycle.space/tonconnect-manifest.json'
+  'https://vpn.plankton.ceo/tonconnect-manifest.json'
 
 export default function RootLayout({
   children,

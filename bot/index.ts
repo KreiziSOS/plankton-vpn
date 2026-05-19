@@ -6,7 +6,8 @@ import { checkUserAccess } from '../lib/access'
 import { getUserLanguage } from './helpers/getUserLanguage'
 import { loc } from './helpers/loc'
 
-const DEFAULT_APP_URL = 'https://vpn.tokencycle.space'
+const DEFAULT_APP_URL = 'https://vpn.plankton.ceo'
+const BOT_URL = 'https://t.me/PlanktonVPNBot'
 const CHANNEL_URL = 'https://t.me/plankton_info'
 const CHAT_URL = 'https://t.me/ceo_plankton'
 const SUPPORT_URL = 'https://t.me/plankton_support'
@@ -222,7 +223,9 @@ bot.callbackQuery('help', async (ctx) => {
         .row()
         .url('Telegram Channel', CHANNEL_URL)
         .row()
-        .url('Telegram Chat', CHAT_URL),
+        .url('Telegram Chat', CHAT_URL)
+        .row()
+        .url('Telegram Bot', BOT_URL),
     }
   )
 })

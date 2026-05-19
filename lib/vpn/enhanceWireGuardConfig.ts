@@ -52,7 +52,7 @@ export function enhanceWireGuardConfig(config: string) {
 
     if (section === 'peer' && /^Endpoint\s*=/i.test(trimmed)) {
       hasEndpoint = true
-      result.push('Endpoint = vpn.tokencycle.space:51820')
+      result.push('Endpoint = vpn.plankton.ceo:51820')
       continue
     }
 
@@ -68,7 +68,7 @@ export function enhanceWireGuardConfig(config: string) {
   }
 
   const peerLines = []
-  if (!hasEndpoint) peerLines.push('Endpoint = vpn.tokencycle.space:51820')
+  if (!hasEndpoint) peerLines.push('Endpoint = vpn.plankton.ceo:51820')
   if (!hasKeepalive) peerLines.push('PersistentKeepalive = 25')
   if (peerLines.length && peerInsertAt >= 0) {
     result.splice(peerInsertAt, 0, ...peerLines)

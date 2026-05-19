@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
 
-export async function getDeviceLimit(wallet: string) {
+export async function getActiveSubscriptionDeviceLimit(wallet: string) {
   const activeSub = await prisma.subscription.findFirst({
     where: {
       wallet,
@@ -10,11 +10,17 @@ export async function getDeviceLimit(wallet: string) {
     orderBy: { expiresAt: 'desc' },
   })
 
-  if (!activeSub) return 1
+  if (!activeSub) return null
 
   if (activeSub.plan === 'ONE_MONTH') return 2
   if (activeSub.plan === 'THREE_MONTHS') return 3
   if (activeSub.plan === 'TWELVE_MONTHS') return 5
 
-  return 1
+  return null
+}
+
+export async function getDeviceLimit(wallet: string) {
+  const subLimit = await getActiveSubscriptionDeviceLimit(wallet)
+
+  return subLimit ?? 1
 }

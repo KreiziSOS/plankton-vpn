@@ -58,6 +58,8 @@ const TEXT = {
     download: 'Download Config',
     downloadWireguard: 'Download WireGuard .conf',
     downloadAmnezia: 'Download Amnezia .awg',
+    openConfigBrowser: 'Open Config in Browser',
+    configOpenNote: 'If the config opens as text, tap Share -> Open in WireGuard / Amnezia.',
     home: 'Home',
     vpn: 'VPN',
     guide: 'Guide',
@@ -112,7 +114,8 @@ const TEXT = {
     featureTelegram: 'Telegram-native access',
     deviceLimitLine: 'Device limit',
     activeVpnDevices: 'active VPN device(s)',
-    protocolsIncluded: 'Protocols included: WireGuard default + Amnezia AWG profile.',
+    protocolsIncluded: 'WireGuard and Amnezia VPN included.',
+    holderDeviceBadge: '1 WireGuard + 1 Amnezia',
     payTon: 'Pay TON',
     payPlankton: 'Pay $PLANKTON',
     pricesPoweredBy: 'Prices powered by',
@@ -130,7 +133,7 @@ const TEXT = {
     amStep3: 'Generate and download your .awg profile.',
     amStep4: 'Import the .awg profile into Amnezia and enable VPN.',
     openAmnezia: 'Open Amnezia Official',
-    limitHolder: 'Holder access gives 1 VPN device.',
+    limitHolder: 'Holder access gives 1 WireGuard device and 1 Amnezia device.',
     limitOne: '1 Month plan gives 2 VPN devices.',
     limitThree: '3 Months plan gives 3 VPN devices.',
     limitYear: '12 Months plan gives 5 VPN devices.',
@@ -190,6 +193,8 @@ const TEXT = {
     download: 'Скачать конфиг',
     downloadWireguard: 'Скачать WireGuard .conf',
     downloadAmnezia: 'Скачать Amnezia .awg',
+    openConfigBrowser: 'Открыть конфиг в браузере',
+    configOpenNote: 'Если конфиг открылся как текст, нажмите Share -> Open in WireGuard / Amnezia.',
     home: 'Главная',
     vpn: 'VPN',
     guide: 'Гайд',
@@ -244,7 +249,8 @@ const TEXT = {
     featureTelegram: 'Доступ прямо через Telegram',
     deviceLimitLine: 'Лимит устройств',
     activeVpnDevices: 'активных VPN устройств(а)',
-    protocolsIncluded: 'Включены протоколы: WireGuard по умолчанию + Amnezia AWG профиль.',
+    protocolsIncluded: 'WireGuard и Amnezia VPN включены.',
+    holderDeviceBadge: '1 WireGuard + 1 Amnezia',
     payTon: 'Оплатить TON',
     payPlankton: 'Оплатить $PLANKTON',
     pricesPoweredBy: 'Цены обновляются через',
@@ -262,7 +268,7 @@ const TEXT = {
     amStep3: 'Создай и скачай .awg профиль.',
     amStep4: 'Импортируй .awg профиль в Amnezia и включи VPN.',
     openAmnezia: 'Открыть Amnezia Official',
-    limitHolder: 'Холдерский доступ даёт 1 VPN устройство.',
+    limitHolder: 'Холдерский доступ даёт 1 устройство WireGuard и 1 устройство Amnezia.',
     limitOne: 'Тариф 1 месяц даёт 2 VPN устройства.',
     limitThree: 'Тариф 3 месяца даёт 3 VPN устройства.',
     limitYear: 'Тариф 12 месяцев даёт 5 VPN устройств.',
@@ -322,6 +328,8 @@ const TEXT = {
     download: 'Завантажити конфіг',
     downloadWireguard: 'Завантажити WireGuard .conf',
     downloadAmnezia: 'Завантажити Amnezia .awg',
+    openConfigBrowser: 'Відкрити конфіг у браузері',
+    configOpenNote: 'Якщо конфіг відкрився як текст, натисніть Share -> Open in WireGuard / Amnezia.',
     home: 'Головна',
     vpn: 'VPN',
     guide: 'Гайд',
@@ -376,7 +384,8 @@ const TEXT = {
     featureTelegram: 'Доступ прямо через Telegram',
     deviceLimitLine: 'Ліміт пристроїв',
     activeVpnDevices: 'активних VPN пристроїв',
-    protocolsIncluded: 'Включені протоколи: WireGuard за замовчуванням + Amnezia AWG профіль.',
+    protocolsIncluded: 'WireGuard і Amnezia VPN включені.',
+    holderDeviceBadge: '1 WireGuard + 1 Amnezia',
     payTon: 'Оплатити TON',
     payPlankton: 'Оплатити $PLANKTON',
     pricesPoweredBy: 'Ціни оновлюються через',
@@ -394,7 +403,7 @@ const TEXT = {
     amStep3: 'Створи та завантаж .awg профіль.',
     amStep4: 'Імпортуй .awg профіль в Amnezia і увімкни VPN.',
     openAmnezia: 'Відкрити Amnezia Official',
-    limitHolder: 'Холдерський доступ дає 1 VPN пристрій.',
+    limitHolder: 'Холдерський доступ дає 1 пристрій WireGuard і 1 пристрій Amnezia.',
     limitOne: 'Тариф 1 місяць дає 2 VPN пристрої.',
     limitThree: 'Тариф 3 місяці дає 3 VPN пристрої.',
     limitYear: 'Тариф 12 місяців дає 5 VPN пристроїв.',
@@ -454,6 +463,8 @@ const TEXT = {
     download: '下载配置',
     downloadWireguard: '下载 WireGuard .conf',
     downloadAmnezia: '下载 Amnezia .awg',
+    openConfigBrowser: '在浏览器中打开配置',
+    configOpenNote: '如果配置以文本形式打开，请点 Share -> Open in WireGuard / Amnezia。',
     home: '首页',
     vpn: 'VPN',
     guide: '指南',
@@ -508,7 +519,8 @@ const TEXT = {
     featureTelegram: 'Telegram 原生访问',
     deviceLimitLine: '设备限制',
     activeVpnDevices: '台活跃 VPN 设备',
-    protocolsIncluded: '包含协议：默认 WireGuard + Amnezia AWG 配置。',
+    protocolsIncluded: '包含 WireGuard 和 Amnezia VPN。',
+    holderDeviceBadge: '1 WireGuard + 1 Amnezia',
     payTon: '支付 TON',
     payPlankton: '支付 $PLANKTON',
     pricesPoweredBy: '价格由以下服务提供',
@@ -526,7 +538,7 @@ const TEXT = {
     amStep3: '生成并下载 .awg 配置。',
     amStep4: '将 .awg 配置导入 Amnezia 并开启 VPN。',
     openAmnezia: '打开 Amnezia 官网',
-    limitHolder: '持有者权限提供 1 台 VPN 设备。',
+    limitHolder: '持有者权限提供 1 台 WireGuard 设备和 1 台 Amnezia 设备。',
     limitOne: '1 个月套餐提供 2 台 VPN 设备。',
     limitThree: '3 个月套餐提供 3 台 VPN 设备。',
     limitYear: '12 个月套餐提供 5 台 VPN 设备。',
@@ -1193,7 +1205,7 @@ function PlansBlock({ t, loading, createPlan, payWithTon, pricingData }: any) {
             <div style={planTitle}>{t.holderFree}</div>
             <div style={muted}>{t.holderDuration}</div>
           </div>
-          <div style={planDeviceBadge}>1 {t.devicesCount}</div>
+          <div style={planDeviceBadge}>{t.holderDeviceBadge}</div>
         </div>
 
         <div style={planFeatureGrid}>
@@ -1500,10 +1512,18 @@ function MyVpnDevices({ t, wallet, devices, devicesLoading, loadDevices, deleteD
             <div style={deviceExpire}>{t.expires}: {expiresAt}</div>
 
             <div style={deviceActions}>
-              <a href={deviceFile} target="_blank" style={deviceDownloadBtn}>
+              <a href={deviceFile} target="_blank" rel="noopener" style={deviceDownloadBtn}>
                 📄 {downloadLabel}
               </a>
 
+              <a href={deviceFile} target="_blank" rel="noopener" style={deviceOpenBtn}>
+                ↗ {t.openConfigBrowser}
+              </a>
+            </div>
+
+            <div style={deviceDownloadNote}>{t.configOpenNote}</div>
+
+            <div style={deviceActions}>
               <button
                 type="button"
                 onClick={() => deleteDevice(device.id)}
@@ -1562,9 +1582,15 @@ function ProtocolSetupPanel({ protocol, t, loading, generateConfig, configUrl, c
       </button>
 
       {canDownload && (
-        <a href={configUrl} target="_blank" style={downloadBtn}>
-          📄 {downloadLabel}
-        </a>
+        <>
+          <a href={configUrl} target="_blank" rel="noopener" style={downloadBtn}>
+            📄 {downloadLabel}
+          </a>
+          <a href={configUrl} target="_blank" rel="noopener" style={outlineBtn}>
+            ↗ {t.openConfigBrowser}
+          </a>
+          <div style={downloadNote}>{t.configOpenNote}</div>
+        </>
       )}
     </div>
   )
@@ -2015,6 +2041,14 @@ const downloadBtn: React.CSSProperties = {
   marginBottom: 10,
 }
 
+const downloadNote: React.CSSProperties = {
+  color: '#8fa3b8',
+  fontSize: 12,
+  fontWeight: 800,
+  lineHeight: 1.35,
+  marginTop: 2,
+}
+
 const sectionTitle: React.CSSProperties = {
   fontSize: 22,
   fontWeight: 1000,
@@ -2344,6 +2378,21 @@ const deviceDownloadBtn: React.CSSProperties = {
   justifyContent: 'center',
   fontWeight: 1000,
   fontSize: 13,
+}
+
+const deviceOpenBtn: React.CSSProperties = {
+  ...deviceDownloadBtn,
+  background: 'rgba(255,255,255,.06)',
+  color: '#fff',
+  border: '1px solid rgba(255,255,255,.12)',
+}
+
+const deviceDownloadNote: React.CSSProperties = {
+  color: '#8fa3b8',
+  fontSize: 11,
+  fontWeight: 800,
+  lineHeight: 1.35,
+  marginTop: 8,
 }
 
 const deviceDeleteBtn: React.CSSProperties = {

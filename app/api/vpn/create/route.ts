@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { checkUserAccess } from '@/lib/access'
-import { getDeviceLimit } from '@/lib/vpn/deviceLimits'
+import { getActiveSubscriptionDeviceLimit } from '@/lib/vpn/deviceLimits'
 
 const WG_URL = process.env.WG_EASY_URL
 const WG_PASSWORD = process.env.WG_EASY_PASSWORD
@@ -98,7 +98,43 @@ export async function POST(req: Request) {
       })
     }
 
-    const deviceLimit = await getDeviceLimit(wallet)
+    const subscriptionDeviceLimit = await getActiveSubscriptionDeviceLimit(wallet)
+
+    if (!subscriptionDeviceLimit) {
+      const existingProtocolDevice = await prisma.vpnDevice.findFirst({
+        where: {
+          wallet,
+          protocol,
+        },
+      })
+
+      if (existingProtocolDevice) {
+        return NextResponse.json({
+          ok: true,
+          existed: true,
+          device: existingProtocolDevice,
+        })
+      }
+
+      const protocolDevices = await prisma.vpnDevice.count({
+        where: {
+          wallet,
+          protocol,
+        },
+      })
+
+      if (protocolDevices >= 1) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error: `Holder access allows 1 ${protocol === 'amnezia' ? 'Amnezia' : 'WireGuard'} device.`,
+            limit: 1,
+            used: protocolDevices,
+          },
+          { status: 403 },
+        )
+      }
+    }
 
     const currentDevices = await prisma.vpnDevice.count({
       where: {
@@ -106,12 +142,12 @@ export async function POST(req: Request) {
       },
     })
 
-    if (currentDevices >= deviceLimit) {
+    if (subscriptionDeviceLimit && currentDevices >= subscriptionDeviceLimit) {
       return NextResponse.json(
         {
           ok: false,
-          error: `Device limit reached. Your current limit is ${deviceLimit}.`,
-          limit: deviceLimit,
+          error: `Device limit reached. Your current limit is ${subscriptionDeviceLimit}.`,
+          limit: subscriptionDeviceLimit,
           used: currentDevices,
         },
         { status: 403 },
