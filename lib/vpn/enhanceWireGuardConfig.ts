@@ -5,7 +5,6 @@ export function enhanceWireGuardConfig(config: string) {
   let interfaceInsertAt = -1
   let peerInsertAt = -1
   let hasDns = false
-  let hasMtu = false
   let hasKeepalive = false
   let hasEndpoint = false
 
@@ -34,13 +33,7 @@ export function enhanceWireGuardConfig(config: string) {
 
     if (section === 'interface' && /^DNS\s*=/i.test(trimmed)) {
       hasDns = true
-      result.push('DNS = 1.1.1.1, 8.8.8.8')
-      continue
-    }
-
-    if (section === 'interface' && /^MTU\s*=/i.test(trimmed)) {
-      hasMtu = true
-      result.push('MTU = 1280')
+      result.push('DNS = 1.1.1.1')
       continue
     }
 
@@ -60,8 +53,7 @@ export function enhanceWireGuardConfig(config: string) {
   }
 
   const interfaceLines = []
-  if (!hasDns) interfaceLines.push('DNS = 1.1.1.1, 8.8.8.8')
-  if (!hasMtu) interfaceLines.push('MTU = 1280')
+  if (!hasDns) interfaceLines.push('DNS = 1.1.1.1')
   if (interfaceLines.length && interfaceInsertAt >= 0) {
     result.splice(interfaceInsertAt, 0, ...interfaceLines)
     if (peerInsertAt > interfaceInsertAt) peerInsertAt += interfaceLines.length

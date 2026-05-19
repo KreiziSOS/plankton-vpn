@@ -116,10 +116,11 @@ export async function GET(req: Request) {
 
     const protocol = device.protocol === 'amnezia' ? 'amnezia' : 'wireguard'
 
-    const finalConfig =
-      protocol === 'amnezia'
-        ? generateAmneziaConfig(stableConfig)
-        : stableConfig
+    // const finalConfig =
+    //   protocol === 'amnezia'
+    //     ? generateAmneziaConfig(stableConfig)
+    //     : stableConfig
+    const finalConfig = stableConfig
 
     const filename =
       protocol === 'amnezia'
@@ -128,9 +129,8 @@ export async function GET(req: Request) {
 
     return new Response(finalConfig, {
       headers: {
-        'Content-Type': 'application/octet-stream',
+        'Content-Type': 'text/plain; charset=utf-8',
         'Content-Disposition': `attachment; filename="${filename}"`,
-        'Content-Transfer-Encoding': 'binary',
         'Cache-Control': 'no-store',
       },
     })
