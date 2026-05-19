@@ -59,7 +59,7 @@ const TEXT = {
     downloadWireguard: 'Download WireGuard .conf',
     downloadAmnezia: 'Download Amnezia .awg',
     openConfigBrowser: 'Open Config in Browser',
-    configOpenNote: 'If the config opens as text, tap Share -> Open in WireGuard / Amnezia.',
+    configOpenNote: 'iPhone: if the file opens in Amnezia by mistake, open the WireGuard app → tap ➕ → "Create from file or archive" → pick the .conf from Downloads.',
     home: 'Home',
     vpn: 'VPN',
     guide: 'Guide',
@@ -178,6 +178,12 @@ const TEXT = {
     upgradeMarket: 'Open Market to upgrade your plan and add more devices.',
     configReady: 'Config ready',
     error: 'Error',
+    guideFaqTitle: 'Troubleshooting',
+    faqAmneziaConflictTitle: 'WG config opens in Amnezia instead of WireGuard',
+    faqStep1: 'Open the WireGuard app on iPhone',
+    faqStep2: 'Tap ➕ in the top right corner',
+    faqStep3: 'Select "Create from file or archive"',
+    faqStep4: 'Find the .conf file in Downloads and confirm import',
   },
   ru: {
     title: 'PLANKTON VPN',
@@ -194,7 +200,7 @@ const TEXT = {
     downloadWireguard: 'Скачать WireGuard .conf',
     downloadAmnezia: 'Скачать Amnezia .awg',
     openConfigBrowser: 'Открыть конфиг в браузере',
-    configOpenNote: 'Если конфиг открылся как текст, нажмите Share -> Open in WireGuard / Amnezia.',
+    configOpenNote: 'iPhone: если файл по ошибке открылся в Amnezia, откройте приложение WireGuard → нажмите ➕ → «Создать из файла или архива» → выберите .conf из Загрузок.',
     home: 'Главная',
     vpn: 'VPN',
     guide: 'Гайд',
@@ -313,6 +319,12 @@ const TEXT = {
     upgradeMarket: 'Открой маркет, чтобы улучшить тариф и добавить устройства.',
     configReady: 'Конфиг готов',
     error: 'Ошибка',
+    guideFaqTitle: 'Решение проблем',
+    faqAmneziaConflictTitle: 'WG-конфиг открывается в Amnezia вместо WireGuard',
+    faqStep1: 'Откройте приложение WireGuard на iPhone',
+    faqStep2: 'Нажмите ➕ в правом верхнем углу',
+    faqStep3: 'Выберите «Создать из файла или архива»',
+    faqStep4: 'Найдите .conf файл в Загрузках и подтвердите импорт',
   },
   ua: {
     title: 'PLANKTON VPN',
@@ -329,7 +341,7 @@ const TEXT = {
     downloadWireguard: 'Завантажити WireGuard .conf',
     downloadAmnezia: 'Завантажити Amnezia .awg',
     openConfigBrowser: 'Відкрити конфіг у браузері',
-    configOpenNote: 'Якщо конфіг відкрився як текст, натисніть Share -> Open in WireGuard / Amnezia.',
+    configOpenNote: 'iPhone: якщо файл помилково відкрився в Amnezia, відкрийте застосунок WireGuard → натисніть ➕ → «Створити з файлу або архіву» → виберіть .conf із Завантажень.',
     home: 'Головна',
     vpn: 'VPN',
     guide: 'Гайд',
@@ -448,6 +460,12 @@ const TEXT = {
     upgradeMarket: 'Відкрий маркет, щоб покращити тариф і додати пристрої.',
     configReady: 'Конфіг готовий',
     error: 'Помилка',
+    guideFaqTitle: 'Вирішення проблем',
+    faqAmneziaConflictTitle: 'WG-конфіг відкривається в Amnezia замість WireGuard',
+    faqStep1: 'Відкрийте застосунок WireGuard на iPhone',
+    faqStep2: 'Натисніть ➕ у правому верхньому куті',
+    faqStep3: 'Виберіть «Створити з файлу або архіву»',
+    faqStep4: 'Знайдіть .conf файл у Завантаженнях і підтвердьте імпорт',
   },
   zh: {
     title: 'PLANKTON VPN',
@@ -464,7 +482,7 @@ const TEXT = {
     downloadWireguard: '下载 WireGuard .conf',
     downloadAmnezia: '下载 Amnezia .awg',
     openConfigBrowser: '在浏览器中打开配置',
-    configOpenNote: '如果配置以文本形式打开，请点 Share -> Open in WireGuard / Amnezia。',
+    configOpenNote: 'iPhone：如果文件错误地在 Amnezia 中打开，请打开 WireGuard 应用 → 点击 ➕ → "从文件或归档创建" → 从下载中选择 .conf 文件。',
     home: '首页',
     vpn: 'VPN',
     guide: '指南',
@@ -583,6 +601,12 @@ const TEXT = {
     upgradeMarket: '打开市场升级套餐并添加更多设备。',
     configReady: '配置已准备好',
     error: '错误',
+    guideFaqTitle: '故障排除',
+    faqAmneziaConflictTitle: 'WG 配置在 Amnezia 中打开而不是 WireGuard',
+    faqStep1: '在 iPhone 上打开 WireGuard 应用',
+    faqStep2: '点击右上角的 ➕',
+    faqStep3: '选择"从文件或归档创建"',
+    faqStep4: '在下载中找到 .conf 文件并确认导入',
   },
 }
 
@@ -1386,6 +1410,15 @@ function Guide({ t }: any) {
         <a href="https://amnezia.org/" target="_blank" rel="noopener" style={downloadBtn}>
           ⬇ {t.openAmnezia}
         </a>
+      </div>
+
+      <div style={guideProtocolCard}>
+        <div style={guideProtocolTitle}>{t.guideFaqTitle}</div>
+        <div style={muted}>{t.faqAmneziaConflictTitle}</div>
+        <GuideStep n="1" text={t.faqStep1} />
+        <GuideStep n="2" text={t.faqStep2} />
+        <GuideStep n="3" text={t.faqStep3} />
+        <GuideStep n="4" text={t.faqStep4} />
       </div>
 
       <div style={guideProtocolCard}>
