@@ -1,4 +1,5 @@
 import 'dotenv/config'
+import { randomBytes } from 'crypto'
 import { Bot, InlineKeyboard, InputFile } from 'grammy'
 import { prisma } from '../lib/prisma'
 import { checkUserAccess } from '../lib/access'
@@ -6,9 +7,9 @@ import { getUserLanguage } from './helpers/getUserLanguage'
 import { loc } from './helpers/loc'
 
 const DEFAULT_APP_URL = 'https://vpn.tokencycle.space'
-const TELEGRAM_BOT_URL = 'https://t.me/PlanktonVPNBot'
 const CHANNEL_URL = 'https://t.me/plankton_info'
 const CHAT_URL = 'https://t.me/ceo_plankton'
+const SUPPORT_URL = 'https://t.me/plankton_support'
 const WEBSITE_URL = (process.env.APP_URL || DEFAULT_APP_URL).replace(/\/$/, '')
 const MINI_APP_URL = `${WEBSITE_URL}/en/app`
 
@@ -32,13 +33,34 @@ function mainMenu(lang: string) {
   return new InlineKeyboard()
     .webApp(loc(lang, 'btn_launch_app'), MINI_APP_URL)
     .row()
-    .text(loc(lang, 'btn_my_vpn'),    'myvpn')
-    .text(loc(lang, 'btn_devices'),   'devices')
-    .row()
-    .webApp(loc(lang, 'btn_subscription'), `${MINI_APP_URL}?startapp=plans`)
     .text(loc(lang, 'btn_help'),      'help')
     .row()
     .text(loc(lang, 'btn_language'),  'language')
+}
+
+function generateRefCode() {
+  return randomBytes(6).toString('base64url')
+}
+
+async function ensureRefCode(wallet: string) {
+  const existing = await prisma.user.findUnique({ where: { wallet } })
+  if (existing?.refCode) return existing.refCode
+
+  for (let i = 0; i < 5; i++) {
+    const refCode = generateRefCode()
+
+    try {
+      await prisma.user.update({
+        where: { wallet },
+        data: { refCode },
+      })
+      return refCode
+    } catch (e: any) {
+      if (e?.code !== 'P2002') throw e
+    }
+  }
+
+  throw new Error('Could not generate referral code')
 }
 
 // ─── /start ──────────────────────────────────────────────────────────────────
@@ -195,14 +217,12 @@ bot.callbackQuery('help', async (ctx) => {
       reply_markup: new InlineKeyboard()
         .url(
           loc(lang, 'btn_contact_support'),
-          CHAT_URL
+          SUPPORT_URL
         )
         .row()
         .url('Telegram Channel', CHANNEL_URL)
         .row()
-        .url('Telegram Bot', TELEGRAM_BOT_URL)
-        .row()
-        .url('🌐 Website', WEBSITE_URL),
+        .url('Telegram Chat', CHAT_URL),
     }
   )
 })
@@ -265,11 +285,24 @@ bot.command('link', async (ctx) => {
     return
   }
 
-  await prisma.user.upsert({
-    where:  { wallet },
-    update: { telegramId },
-    create: { wallet, telegramId },
-  })
+  let linked
+
+  for (let i = 0; i < 5; i++) {
+    try {
+      linked = await prisma.user.upsert({
+        where:  { wallet },
+        update: { telegramId },
+        create: { wallet, telegramId, refCode: generateRefCode() },
+      })
+      break
+    } catch (e: any) {
+      if (e?.code !== 'P2002') throw e
+    }
+  }
+
+  if (!linked) throw new Error('Could not link wallet')
+
+  if (!linked.refCode) await ensureRefCode(wallet)
 
   await ctx.reply(
     loc(lang, 'link_success').replace('{wallet}', wallet),

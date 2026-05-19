@@ -7,7 +7,8 @@ const en = {
     `🔐 Pay with TON or $PLANKTON\n` +
     `🌍 Works in any country\n` +
     `🎁 Free for holders of 1M\\+ $PLANKTON\n\n` +
-    `Tap *Launch App* to start\\.`,
+    `All VPN management is inside the Web App\\.\n` +
+    `Tap *Launch App* to connect your wallet, check access, buy a subscription, manage devices, and download configs\\.`,
 
   // Inline keyboard buttons
   btn_launch_app:       'Launch App',
@@ -58,16 +59,10 @@ const en = {
 
   // Help FAQ — MarkdownV2
   help_text:
-    `*❓ How do I get free VPN access?*\n` +
-    `Hold 1,000,000 $PLANKTON in your wallet\\. Connect your wallet in the app and tap Check Access\\.\n\n` +
-    `*💳 How do I pay for a subscription?*\n` +
-    `Open the app, go to the VPN tab, and choose a plan\\. Pay with TON or $PLANKTON\\.\n\n` +
-    `*📱 Which devices are supported?*\n` +
-    `Any device with WireGuard: iOS, Android, Windows, macOS, Linux\\.\n\n` +
-    `*⬇️ How do I install WireGuard?*\n` +
-    `Download the official app from wireguard\\.com and import the \\.conf file from the app\\.\n\n` +
-    `*🔧 VPN isn't working — what should I do?*\n` +
-    `Try re\\-downloading the config file\\. If the issue persists, contact our support\\.`,
+    `*Plankton VPN Help*\n\n` +
+    `All VPN management is inside the Web App\\.\n\n` +
+    `Open *Launch App* to connect your wallet, check access, buy a subscription, manage devices, and download WireGuard or Amnezia configs\\.\n\n` +
+    `Support: https://t\\.me/plankton_support`,
 
   // Language picker
   language_choose: 'Choose your language:',

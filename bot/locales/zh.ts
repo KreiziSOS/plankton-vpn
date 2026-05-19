@@ -8,7 +8,8 @@ const zh: LocaleData = {
     `🔐 使用 TON 或 $PLANKTON 支付\n` +
     `🌍 在任何国家均可使用\n` +
     `🎁 持有 1M\\+ $PLANKTON 免费使用\n\n` +
-    `点击 *Launch App* 开始。`,
+    `所有 VPN 管理都在 Web App 中完成。\n` +
+    `点击 *Launch App* 连接钱包、检查访问权限、购买订阅、管理设备并下载配置。`,
 
   btn_launch_app:       'Launch App',
   btn_my_vpn:           '我的 VPN',
@@ -55,16 +56,10 @@ const zh: LocaleData = {
   // Chinese text uses 。(U+3002) which is not a MarkdownV2 special char — no escaping needed.
   // Only ASCII . in wireguard\.com and \.conf needs escaping.
   help_text:
-    `*❓ 如何获得免费 VPN？*\n` +
-    `在钱包中持有 1,000,000 $PLANKTON。在应用中连接钱包，然后点击"检查访问权限"。\n\n` +
-    `*💳 如何支付订阅？*\n` +
-    `打开应用，进入 VPN 标签页，选择套餐。使用 TON 或 $PLANKTON 支付。\n\n` +
-    `*📱 支持哪些设备？*\n` +
-    `任何支持 WireGuard 的设备：iOS、Android、Windows、macOS、Linux。\n\n` +
-    `*⬇️ 如何安装 WireGuard？*\n` +
-    `从 wireguard\\.com 下载官方应用，然后导入应用生成的 \\.conf 文件。\n\n` +
-    `*🔧 VPN 无法使用——该怎么办？*\n` +
-    `尝试重新下载配置文件。如果问题持续存在，请联系下方客服。`,
+    `*Plankton VPN 帮助*\n\n` +
+    `所有 VPN 管理都在 Web App 中完成。\n\n` +
+    `打开 *Launch App* 连接钱包、检查访问权限、购买订阅、管理设备，并下载 WireGuard 或 Amnezia 配置。\n\n` +
+    `客服: https://t\\.me/plankton_support`,
 
   language_choose: '请选择语言：',
   language_set:    '✅ 语言已设置为中文',

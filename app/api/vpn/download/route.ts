@@ -31,6 +31,11 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url)
     const name = searchParams.get('name')
+    const requestedProtocol = searchParams.get('protocol')
+    const protocolFilter =
+      requestedProtocol === 'amnezia' || requestedProtocol === 'wireguard'
+        ? requestedProtocol
+        : undefined
 
     if (!name) {
       return NextResponse.json(
@@ -42,6 +47,7 @@ export async function GET(req: Request) {
     const device = await prisma.vpnDevice.findFirst({
       where: {
         name,
+        ...(protocolFilter ? { protocol: protocolFilter } : {}),
       },
     })
 
@@ -108,7 +114,7 @@ export async function GET(req: Request) {
     const rawConfig = await configRes.text()
     const stableConfig = enhanceWireGuardConfig(rawConfig)
 
-    const protocol = device.protocol || 'wireguard'
+    const protocol = device.protocol === 'amnezia' ? 'amnezia' : 'wireguard'
 
     const finalConfig =
       protocol === 'amnezia'

@@ -56,6 +56,8 @@ const TEXT = {
     install: 'Install',
     generate: 'Generate Config',
     download: 'Download Config',
+    downloadWireguard: 'Download WireGuard .conf',
+    downloadAmnezia: 'Download Amnezia .awg',
     home: 'Home',
     vpn: 'VPN',
     guide: 'Guide',
@@ -152,6 +154,7 @@ const TEXT = {
     copy: 'Copy',
     withdrawals: 'Withdrawals from 1 TON by manual admin approval.',
     referralShareText: 'Join PLANKTON VPN and unlock private VPN access with TON / $PLANKTON.',
+    referralLoading: 'Preparing referral code...',
     copied: 'Referral link copied',
     copyFailed: 'Could not copy link',
     connectWalletFirst: 'Connect wallet first',
@@ -185,6 +188,8 @@ const TEXT = {
     install: 'Установить',
     generate: 'Создать конфиг',
     download: 'Скачать конфиг',
+    downloadWireguard: 'Скачать WireGuard .conf',
+    downloadAmnezia: 'Скачать Amnezia .awg',
     home: 'Главная',
     vpn: 'VPN',
     guide: 'Гайд',
@@ -281,6 +286,7 @@ const TEXT = {
     copy: 'Копировать',
     withdrawals: 'Вывод от 1 TON по заявке и ручному одобрению админом.',
     referralShareText: 'Подключайся к PLANKTON VPN и получай приватный VPN-доступ через TON / $PLANKTON.',
+    referralLoading: 'Готовим реферальный код...',
     copied: 'Реферальная ссылка скопирована',
     copyFailed: 'Не удалось скопировать ссылку',
     connectWalletFirst: 'Сначала подключи кошелёк',
@@ -314,6 +320,8 @@ const TEXT = {
     install: 'Встановити',
     generate: 'Створити конфіг',
     download: 'Завантажити конфіг',
+    downloadWireguard: 'Завантажити WireGuard .conf',
+    downloadAmnezia: 'Завантажити Amnezia .awg',
     home: 'Головна',
     vpn: 'VPN',
     guide: 'Гайд',
@@ -410,6 +418,7 @@ const TEXT = {
     copy: 'Копіювати',
     withdrawals: 'Виведення від 1 TON за заявкою та ручним схваленням адміна.',
     referralShareText: 'Підключайся до PLANKTON VPN і отримай приватний VPN-доступ через TON / $PLANKTON.',
+    referralLoading: 'Готуємо реферальний код...',
     copied: 'Реферальне посилання скопійовано',
     copyFailed: 'Не вдалося скопіювати посилання',
     connectWalletFirst: 'Спочатку підключи гаманець',
@@ -443,6 +452,8 @@ const TEXT = {
     install: '安装',
     generate: '生成配置',
     download: '下载配置',
+    downloadWireguard: '下载 WireGuard .conf',
+    downloadAmnezia: '下载 Amnezia .awg',
     home: '首页',
     vpn: 'VPN',
     guide: '指南',
@@ -539,6 +550,7 @@ const TEXT = {
     copy: '复制',
     withdrawals: '1 TON 起提现，由管理员手动审核。',
     referralShareText: '加入 PLANKTON VPN，用 TON / $PLANKTON 解锁私密 VPN 访问。',
+    referralLoading: '正在准备推荐码...',
     copied: '推荐链接已复制',
     copyFailed: '无法复制链接',
     connectWalletFirst: '请先连接钱包',
@@ -603,6 +615,7 @@ export default function MiniAppClient() {
   const [forcePlans, setForcePlans] = useState(false)
   const [pricingData, setPricingData] = useState<any>(null)
   const [protocol, setProtocol] = useState<Protocol>('wireguard')
+  const [configProtocol, setConfigProtocol] = useState<Protocol | null>(null)
   const [devices, setDevices] = useState<VpnDevice[]>([])
   const [devicesLoading, setDevicesLoading] = useState(false)
 
@@ -612,6 +625,12 @@ export default function MiniAppClient() {
       .then(data => { if (data.plans) setPricingData(data) })
       .catch(() => {})
   }, [])
+
+  function selectProtocol(nextProtocol: Protocol) {
+    setProtocol(nextProtocol)
+    setConfigUrl('')
+    setConfigProtocol(null)
+  }
 
   // Route to plans tab when opened via bot subscription button or deep link
   useEffect(() => {
@@ -816,7 +835,10 @@ export default function MiniAppClient() {
   
       const deviceName = encodeURIComponent(data.device.name)
   
-      setConfigUrl(`/api/vpn/download?name=${deviceName}`)
+      const createdProtocol = data.device.protocol === 'amnezia' ? 'amnezia' : 'wireguard'
+
+      setConfigUrl(`/api/vpn/download?name=${deviceName}&protocol=${createdProtocol}`)
+      setConfigProtocol(createdProtocol)
       setStatus(t.configReady)
       await loadDevices()
     } catch (e) {
@@ -1020,7 +1042,7 @@ export default function MiniAppClient() {
                         <ProtocolSelector
                           t={t}
                           protocol={protocol}
-                          setProtocol={setProtocol}
+                          setProtocol={selectProtocol}
                         />
 
                         <ProtocolSetupPanel
@@ -1029,6 +1051,7 @@ export default function MiniAppClient() {
                           loading={loading}
                           generateConfig={generateConfig}
                           configUrl={configUrl}
+                          configProtocol={configProtocol}
                         />
                       </div>
                     )}
@@ -1447,8 +1470,10 @@ function MyVpnDevices({ t, wallet, devices, devicesLoading, loadDevices, deleteD
       )}
 
       {wallet && devices.map((device: VpnDevice) => {
-        const deviceProtocol = device.protocol === 'amnezia' ? 'Amnezia' : 'WireGuard'
-        const deviceFile = `/api/vpn/download?name=${encodeURIComponent(device.name)}`
+        const protocolId = device.protocol === 'amnezia' ? 'amnezia' : 'wireguard'
+        const deviceProtocol = protocolId === 'amnezia' ? 'Amnezia' : 'WireGuard'
+        const deviceFile = `/api/vpn/download?name=${encodeURIComponent(device.name)}&protocol=${protocolId}`
+        const downloadLabel = protocolId === 'amnezia' ? t.downloadAmnezia : t.downloadWireguard
         const expiresAt = device.expiresAt
           ? new Date(device.expiresAt).toLocaleDateString()
           : '—'
@@ -1476,7 +1501,7 @@ function MyVpnDevices({ t, wallet, devices, devicesLoading, loadDevices, deleteD
 
             <div style={deviceActions}>
               <a href={deviceFile} target="_blank" style={deviceDownloadBtn}>
-                📄 {t.download}
+                📄 {downloadLabel}
               </a>
 
               <button
@@ -1496,13 +1521,15 @@ function MyVpnDevices({ t, wallet, devices, devicesLoading, loadDevices, deleteD
 }
 
 
-function ProtocolSetupPanel({ protocol, t, loading, generateConfig, configUrl }: any) {
+function ProtocolSetupPanel({ protocol, t, loading, generateConfig, configUrl, configProtocol }: any) {
   const isAmnezia = protocol === 'amnezia'
   const title = isAmnezia ? 'Amnezia VPN' : 'WireGuard'
   const desc = isAmnezia ? t.amneziaDesc : t.wireguardDesc
   const installUrl = isAmnezia ? 'https://amnezia.org/' : WIREGUARD_URL
   const fileType = isAmnezia ? t.awgProfile : t.confConfig
   const logo = isAmnezia ? '/amnezia-logo.png' : '/assets/wireguard-logo.png'
+  const canDownload = configUrl && configProtocol === protocol
+  const downloadLabel = isAmnezia ? t.downloadAmnezia : t.downloadWireguard
 
   return (
     <div style={protocolSetupCard}>
@@ -1534,9 +1561,9 @@ function ProtocolSetupPanel({ protocol, t, loading, generateConfig, configUrl }:
         ⚙ {loading ? t.checking : t.generate}
       </button>
 
-      {configUrl && (
+      {canDownload && (
         <a href={configUrl} target="_blank" style={downloadBtn}>
-          📄 {t.download}
+          📄 {downloadLabel}
         </a>
       )}
     </div>
@@ -1544,20 +1571,56 @@ function ProtocolSetupPanel({ protocol, t, loading, generateConfig, configUrl }:
 }
 
 function ReferralProgram({ wallet, t }: any) {
+  const [referralLink, setReferralLink] = useState('')
+  const [referralLoading, setReferralLoading] = useState(false)
   const activePaidRefs = 0
   const totalRefs = 0
   const earnedTon = 0
   const freeYearTarget = 5
   const progress = Math.min(activePaidRefs, freeYearTarget)
-  const referralCode = wallet ? wallet.replace(/[^a-zA-Z0-9_-]/g, '') : 'connect_wallet'
-  const referralLink = `${TG_BOT_URL}?startapp=${encodeURIComponent(`ref_${referralCode}`)}`
   const shareText = t.referralShareText
+
+  useEffect(() => {
+    if (!wallet) {
+      setReferralLink('')
+      return
+    }
+
+    let cancelled = false
+
+    async function loadReferral() {
+      try {
+        setReferralLoading(true)
+        const res = await fetch(`/api/referral/me?wallet=${encodeURIComponent(wallet)}`, {
+          cache: 'no-store',
+        })
+        const data = await res.json()
+
+        if (!cancelled && data.ok && data.referralLink) {
+          setReferralLink(data.referralLink)
+        }
+      } catch (e) {
+        console.error('Referral load error:', e)
+        if (!cancelled) setReferralLink('')
+      } finally {
+        if (!cancelled) setReferralLoading(false)
+      }
+    }
+
+    loadReferral()
+
+    return () => {
+      cancelled = true
+    }
+  }, [wallet])
 
   async function copyReferral() {
     if (!wallet) {
       alert(t.connectWalletFirst)
       return
     }
+
+    if (!referralLink) return
 
     try {
       await navigator.clipboard.writeText(referralLink)
@@ -1572,6 +1635,8 @@ function ReferralProgram({ wallet, t }: any) {
       alert(t.connectWalletFirst)
       return
     }
+
+    if (!referralLink) return
 
     const url = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`
     window.open(url, '_blank')
@@ -1588,6 +1653,10 @@ function ReferralProgram({ wallet, t }: any) {
       </div>
 
       <div style={referralRewardPill}>{t.referralReward}</div>
+
+      {wallet && referralLoading && (
+        <div style={referralSmallText}>{t.referralLoading}</div>
+      )}
 
       <div style={referralStatsGrid}>
         <div style={referralStatBox}>
@@ -1617,10 +1686,10 @@ function ReferralProgram({ wallet, t }: any) {
       </div>
 
       <div style={referralActions}>
-        <button type="button" onClick={shareReferral} style={referralShareBtn}>
+        <button type="button" onClick={shareReferral} disabled={referralLoading || !referralLink} style={referralShareBtn}>
           {t.inviteFriend}
         </button>
-        <button type="button" onClick={copyReferral} style={referralCopyBtn}>
+        <button type="button" onClick={copyReferral} disabled={referralLoading || !referralLink} style={referralCopyBtn}>
           {t.copy}
         </button>
       </div>
