@@ -124,6 +124,8 @@ export async function GET(req: Request) {
       headers: {
         'Content-Type': 'application/octet-stream',
         'Content-Disposition': `attachment; filename="${filename}"`,
+        'Content-Transfer-Encoding': 'binary',
+        'Cache-Control': 'no-store',
       },
     })
   } catch (e: any) {

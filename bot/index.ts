@@ -5,17 +5,18 @@ import { checkUserAccess } from '../lib/access'
 import { getUserLanguage } from './helpers/getUserLanguage'
 import { loc } from './helpers/loc'
 
-// ─── Placeholders — replace before going live ────────────────────────────────
-const SUPPORT_USERNAME = '@plankton_support'
-const CHANNEL_USERNAME = '@plankton_official'
-const WEBSITE_URL = process.env.APP_URL || 'https://plankton-vpn-mvp.vercel.app'
+const DEFAULT_APP_URL = 'https://vpn.tokencycle.space'
+const TELEGRAM_BOT_URL = 'https://t.me/PlanktonVPNBot'
+const CHANNEL_URL = 'https://t.me/plankton_info'
+const CHAT_URL = 'https://t.me/ceo_plankton'
+const WEBSITE_URL = (process.env.APP_URL || DEFAULT_APP_URL).replace(/\/$/, '')
+const MINI_APP_URL = `${WEBSITE_URL}/en/app`
 
 // ─── Init ────────────────────────────────────────────────────────────────────
 const token  = process.env.TELEGRAM_BOT_TOKEN
-const appUrl = process.env.APP_URL
+const appUrl = WEBSITE_URL
 
 if (!token)  throw new Error('TELEGRAM_BOT_TOKEN missing')
-if (!appUrl) throw new Error('APP_URL missing')
 
 const bot = new Bot(token)
 
@@ -29,12 +30,12 @@ async function getUserByTelegramId(telegramId: string) {
 
 function mainMenu(lang: string) {
   return new InlineKeyboard()
-    .webApp(loc(lang, 'btn_launch_app'), `${appUrl}/en/app`)
+    .webApp(loc(lang, 'btn_launch_app'), MINI_APP_URL)
     .row()
     .text(loc(lang, 'btn_my_vpn'),    'myvpn')
     .text(loc(lang, 'btn_devices'),   'devices')
     .row()
-    .webApp(loc(lang, 'btn_subscription'), `${appUrl}/en/app?startapp=plans`)
+    .webApp(loc(lang, 'btn_subscription'), `${MINI_APP_URL}?startapp=plans`)
     .text(loc(lang, 'btn_help'),      'help')
     .row()
     .text(loc(lang, 'btn_language'),  'language')
@@ -177,7 +178,7 @@ bot.callbackQuery('createvpn', async (ctx) => {
       reply_markup: new InlineKeyboard()
         .url(loc(lang, 'btn_download_config'), `${appUrl}/api/vpn/download?name=${deviceName}`)
         .row()
-        .webApp(loc(lang, 'btn_launch_app'), `${appUrl}/en/app`),
+        .webApp(loc(lang, 'btn_launch_app'), MINI_APP_URL),
     }
   )
 })
@@ -194,10 +195,12 @@ bot.callbackQuery('help', async (ctx) => {
       reply_markup: new InlineKeyboard()
         .url(
           loc(lang, 'btn_contact_support'),
-          `https://t.me/${SUPPORT_USERNAME.slice(1)}`
+          CHAT_URL
         )
         .row()
-        .url(CHANNEL_USERNAME, `https://t.me/${CHANNEL_USERNAME.slice(1)}`)
+        .url('Telegram Channel', CHANNEL_URL)
+        .row()
+        .url('Telegram Bot', TELEGRAM_BOT_URL)
         .row()
         .url('🌐 Website', WEBSITE_URL),
     }

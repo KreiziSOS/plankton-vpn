@@ -14,8 +14,12 @@ const BUY_URL =
 const WIREGUARD_URL = 'https://www.wireguard.com/install/'
 const TG_CHANNEL = 'https://t.me/plankton_info'
 const TG_CHAT = 'https://t.me/ceo_plankton'
+const TG_BOT_USERNAME =
+  process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME?.replace(/^@/, '') ||
+  'PlanktonVPNBot'
+const TG_BOT_URL =
+  (process.env.NEXT_PUBLIC_TELEGRAM_BOT_URL || `https://t.me/${TG_BOT_USERNAME}`).replace(/\/$/, '')
 const X_URL = 'https://x.com/CEO_Plankton'
-const BOT_USERNAME = 'PlanktonVPNBot'
 
 type Tab = 'home' | 'vpn' | 'market' | 'guide' | 'profile'
 type Lang = 'en' | 'ru' | 'ua' | 'zh'
@@ -68,6 +72,7 @@ const TEXT = {
     links: 'Community',
     channel: 'Telegram Channel',
     chat: 'Telegram Chat',
+    bot: 'Telegram Bot',
     twitter: 'X / Twitter',
     dashboard: 'Profile Dashboard',
     wallet: 'Wallet',
@@ -81,6 +86,12 @@ const TEXT = {
     protocol: 'VPN Protocol',
     wireguardDesc: 'Fast • Lightweight • Default',
     amneziaDesc: 'Better bypass • Anti-blocking • Smart routing',
+    recommendedUse: 'Recommended use',
+    generatedFile: 'Generated file',
+    wgRecommended: 'Everyday VPN access with the official WireGuard app.',
+    amRecommended: 'Networks with blocking or DPI where AWG helps bypass filters.',
+    holderFree: 'Holder / Free',
+    holderDuration: 'Free holder VPN access',
     comingSoon: 'Coming soon',
     marketIntro: 'Buy extra VPN access even if you are already a holder. Paid plans unlock more devices and longer access.',
     month1: '1 Month',
@@ -103,6 +114,8 @@ const TEXT = {
     payTon: 'Pay TON',
     payPlankton: 'Pay $PLANKTON',
     pricesPoweredBy: 'Prices powered by',
+    priceTonLabel: 'TON',
+    pricePlanktonLabel: '$PLANKTON',
     guideWireguardDesc: 'Fast, lightweight and default VPN protocol.',
     guideAmneziaDesc: 'Better bypass, anti-blocking and AWG profile support.',
     guideLimitsTitle: 'Device limits',
@@ -142,6 +155,7 @@ const TEXT = {
     copied: 'Referral link copied',
     copyFailed: 'Could not copy link',
     connectWalletFirst: 'Connect wallet first',
+    telegramUserFallback: 'Telegram User',
     deleteConfirm: 'Delete this VPN device?',
     deleteFailed: 'Failed to delete device',
     paymentWalletMissing: 'Payment wallet missing',
@@ -187,6 +201,7 @@ const TEXT = {
     links: 'Комьюнити',
     channel: 'Telegram канал',
     chat: 'Telegram чат',
+    bot: 'Telegram бот',
     twitter: 'X / Twitter',
     dashboard: 'Панель профиля',
     wallet: 'Кошелёк',
@@ -200,6 +215,12 @@ const TEXT = {
     protocol: 'VPN протокол',
     wireguardDesc: 'Быстрый • Лёгкий • По умолчанию',
     amneziaDesc: 'Лучше обход • Антиблокировка • Smart routing',
+    recommendedUse: 'Рекомендуемое использование',
+    generatedFile: 'Формат файла',
+    wgRecommended: 'Ежедневный VPN-доступ через официальное приложение WireGuard.',
+    amRecommended: 'Сети с блокировками или DPI, где AWG помогает обходить фильтры.',
+    holderFree: 'Холдер / бесплатно',
+    holderDuration: 'Бесплатный VPN-доступ для холдеров',
     comingSoon: 'Скоро',
     marketIntro: 'Покупай дополнительный VPN-доступ даже если ты уже холдер. Платные тарифы дают больше устройств и более долгий доступ.',
     month1: '1 месяц',
@@ -222,6 +243,8 @@ const TEXT = {
     payTon: 'Оплатить TON',
     payPlankton: 'Оплатить $PLANKTON',
     pricesPoweredBy: 'Цены обновляются через',
+    priceTonLabel: 'TON',
+    pricePlanktonLabel: '$PLANKTON',
     guideWireguardDesc: 'Быстрый, лёгкий и основной VPN-протокол.',
     guideAmneziaDesc: 'Лучше для обхода блокировок, антиблокинга и AWG профиля.',
     guideLimitsTitle: 'Лимиты устройств',
@@ -261,6 +284,7 @@ const TEXT = {
     copied: 'Реферальная ссылка скопирована',
     copyFailed: 'Не удалось скопировать ссылку',
     connectWalletFirst: 'Сначала подключи кошелёк',
+    telegramUserFallback: 'Telegram пользователь',
     deleteConfirm: 'Удалить это VPN устройство?',
     deleteFailed: 'Не удалось удалить устройство',
     paymentWalletMissing: 'Кошелёк для оплаты не указан',
@@ -306,6 +330,7 @@ const TEXT = {
     links: 'Спільнота',
     channel: 'Telegram канал',
     chat: 'Telegram чат',
+    bot: 'Telegram бот',
     twitter: 'X / Twitter',
     dashboard: 'Панель профілю',
     wallet: 'Гаманець',
@@ -319,6 +344,12 @@ const TEXT = {
     protocol: 'VPN протокол',
     wireguardDesc: 'Швидкий • Легкий • За замовчуванням',
     amneziaDesc: 'Кращий обхід • Антиблокування • Smart routing',
+    recommendedUse: 'Рекомендоване використання',
+    generatedFile: 'Формат файлу',
+    wgRecommended: 'Щоденний VPN-доступ через офіційний застосунок WireGuard.',
+    amRecommended: 'Мережі з блокуваннями або DPI, де AWG допомагає обходити фільтри.',
+    holderFree: 'Холдер / безкоштовно',
+    holderDuration: 'Безкоштовний VPN-доступ для холдерів',
     comingSoon: 'Скоро',
     marketIntro: 'Купуй додатковий VPN-доступ навіть якщо ти вже холдер. Платні тарифи дають більше пристроїв і довший доступ.',
     month1: '1 місяць',
@@ -341,6 +372,8 @@ const TEXT = {
     payTon: 'Оплатити TON',
     payPlankton: 'Оплатити $PLANKTON',
     pricesPoweredBy: 'Ціни оновлюються через',
+    priceTonLabel: 'TON',
+    pricePlanktonLabel: '$PLANKTON',
     guideWireguardDesc: 'Швидкий, легкий та основний VPN-протокол.',
     guideAmneziaDesc: 'Краще для обходу блокувань, антиблокінгу та AWG профілю.',
     guideLimitsTitle: 'Ліміти пристроїв',
@@ -380,6 +413,7 @@ const TEXT = {
     copied: 'Реферальне посилання скопійовано',
     copyFailed: 'Не вдалося скопіювати посилання',
     connectWalletFirst: 'Спочатку підключи гаманець',
+    telegramUserFallback: 'Telegram користувач',
     deleteConfirm: 'Видалити цей VPN пристрій?',
     deleteFailed: 'Не вдалося видалити пристрій',
     paymentWalletMissing: 'Гаманець для оплати не вказаний',
@@ -425,6 +459,7 @@ const TEXT = {
     links: '社区',
     channel: 'Telegram 频道',
     chat: 'Telegram 群聊',
+    bot: 'Telegram 机器人',
     twitter: 'X / Twitter',
     dashboard: '个人面板',
     wallet: '钱包',
@@ -438,6 +473,12 @@ const TEXT = {
     protocol: 'VPN 协议',
     wireguardDesc: '快速 • 轻量 • 默认',
     amneziaDesc: '更好绕过 • 抗封锁 • 智能路由',
+    recommendedUse: '推荐用途',
+    generatedFile: '生成文件',
+    wgRecommended: '使用官方 WireGuard 应用进行日常 VPN 访问。',
+    amRecommended: '适合存在封锁或 DPI、需要 AWG 绕过过滤的网络。',
+    holderFree: '持有者 / 免费',
+    holderDuration: '持有者免费 VPN 访问',
     comingSoon: '即将推出',
     marketIntro: '即使你已经是持有者，也可以购买额外 VPN 权限。付费套餐可解锁更多设备和更长访问时间。',
     month1: '1 个月',
@@ -460,6 +501,8 @@ const TEXT = {
     payTon: '支付 TON',
     payPlankton: '支付 $PLANKTON',
     pricesPoweredBy: '价格由以下服务提供',
+    priceTonLabel: 'TON',
+    pricePlanktonLabel: '$PLANKTON',
     guideWireguardDesc: '快速、轻量、默认 VPN 协议。',
     guideAmneziaDesc: '更适合绕过封锁、抗干扰和 AWG 配置。',
     guideLimitsTitle: '设备限制',
@@ -499,6 +542,7 @@ const TEXT = {
     copied: '推荐链接已复制',
     copyFailed: '无法复制链接',
     connectWalletFirst: '请先连接钱包',
+    telegramUserFallback: 'Telegram 用户',
     deleteConfirm: '删除这个 VPN 设备？',
     deleteFailed: '删除设备失败',
     paymentWalletMissing: '支付钱包未配置',
@@ -1044,27 +1088,40 @@ export default function MiniAppClient() {
 
 
 function ProtocolSelector({ t, protocol, setProtocol }: any) {
+  const options = [
+    {
+      id: 'wireguard',
+      title: 'WireGuard',
+      desc: t.wireguardDesc,
+      recommended: t.wgRecommended,
+      fileType: t.confConfig,
+    },
+    {
+      id: 'amnezia',
+      title: 'Amnezia VPN',
+      desc: t.amneziaDesc,
+      recommended: t.amRecommended,
+      fileType: t.awgProfile,
+    },
+  ]
+
   return (
     <div style={protocolWrap}>
       <div style={sectionTitle}>{t.protocol}</div>
 
-      <button
-        type="button"
-        onClick={() => setProtocol('wireguard')}
-        style={{ ...protocolCard, ...(protocol === 'wireguard' ? protocolCardActive : {}) }}
-      >
-        <div style={protocolName}>WireGuard</div>
-        <div style={muted}>{t.wireguardDesc}</div>
-      </button>
-
-      <button
-        type="button"
-        onClick={() => setProtocol('amnezia')}
-        style={{ ...protocolCard, ...(protocol === 'amnezia' ? protocolCardActive : {}) }}
-      >
-        <div style={protocolName}>Amnezia VPN</div>
-        <div style={muted}>{t.amneziaDesc}</div>
-      </button>
+      {options.map((option) => (
+        <button
+          key={option.id}
+          type="button"
+          onClick={() => setProtocol(option.id)}
+          style={{ ...protocolCard, ...(protocol === option.id ? protocolCardActive : {}) }}
+        >
+          <div style={protocolName}>{option.title}</div>
+          <div style={muted}>{option.desc}</div>
+          <div style={protocolDetail}>{t.recommendedUse}: {option.recommended}</div>
+          <div style={protocolDetail}>{t.generatedFile}: {option.fileType}</div>
+        </button>
+      ))}
     </div>
   )
 }
@@ -1107,12 +1164,34 @@ function PlansBlock({ t, loading, createPlan, payWithTon, pricingData }: any) {
       <div style={sectionTitle}>{t.plans}</div>
       <div style={marketIntro}>{t.marketIntro}</div>
 
+      <div style={planCardPremium}>
+        <div style={planPremiumTop}>
+          <div>
+            <div style={planTitle}>{t.holderFree}</div>
+            <div style={muted}>{t.holderDuration}</div>
+          </div>
+          <div style={planDeviceBadge}>1 {t.devicesCount}</div>
+        </div>
+
+        <div style={planFeatureGrid}>
+          <div style={planFeature}>{t.featureProtocols}</div>
+          <div style={planFeature}>{t.featureDevices}</div>
+          <div style={planFeature}>{t.featureExpiry}</div>
+          <div style={planFeature}>{t.featureTelegram}</div>
+        </div>
+
+        <div style={planDetailsBox}>
+          <div style={planDetailsText}>{t.limitHolder}</div>
+          <div style={planDetailsText}>{t.protocolsIncluded}</div>
+        </div>
+      </div>
+
       {plans.map(({ key, label, duration, devices, tonUsd, planktonUsd, bestFor }) => {
         const api = pricingData?.plans?.find((p: any) => p.plan === key)
-        const tonLine = api ? `${api.tonDisplay} TON ≈ $${tonUsd}` : `TON: $${tonUsd}`
+        const tonLine = api ? `${api.tonDisplay} TON ≈ $${tonUsd}` : `${t.priceTonLabel}: $${tonUsd}`
         const planktonLine = api
           ? `${api.planktonDisplay} $PLANKTON ≈ $${planktonUsd}`
-          : `$PLANKTON: $${planktonUsd}`
+          : `${t.pricePlanktonLabel}: $${planktonUsd}`
         const active = selectedPlan === key
 
         return (
@@ -1230,6 +1309,10 @@ function HomeLinks({ t }: any) {
         💬 {t.chat}
       </a>
 
+      <a href={TG_BOT_URL} target="_blank" style={linkBtn}>
+        ◆ {t.bot}
+      </a>
+
       <a href={X_URL} target="_blank" style={linkBtn}>
         𝕏 {t.twitter}
       </a>
@@ -1295,7 +1378,7 @@ function Profile({ t, telegramUser, wallet, balance, status, hasAccess, devices,
     telegramUser?.username
       ? `@${telegramUser.username}`
       : [telegramUser?.first_name, telegramUser?.last_name].filter(Boolean).join(' ') ||
-        'Telegram User'
+        t.telegramUserFallback
 
   return (
     <div style={setupCard}>
@@ -1436,6 +1519,8 @@ function ProtocolSetupPanel({ protocol, t, loading, generateConfig, configUrl }:
       </div>
 
       <div style={protocolFeatureGrid}>
+        <div style={protocolFeature}>{t.recommendedUse}: {isAmnezia ? t.amRecommended : t.wgRecommended}</div>
+        <div style={protocolFeature}>{t.generatedFile}: {fileType}</div>
         <div style={protocolFeature}>{t.privateVpnAccess}</div>
         <div style={protocolFeature}>{t.stableMobileConfig}</div>
         <div style={protocolFeature}>{t.autoDisabledExpires}</div>
@@ -1464,8 +1549,8 @@ function ReferralProgram({ wallet, t }: any) {
   const earnedTon = 0
   const freeYearTarget = 5
   const progress = Math.min(activePaidRefs, freeYearTarget)
-  const referralCode = wallet ? wallet.slice(0, 10).replace(/[^a-zA-Z0-9_-]/g, '') : 'connect_wallet'
-  const referralLink = `https://t.me/${BOT_USERNAME}?startapp=ref_${referralCode}`
+  const referralCode = wallet ? wallet.replace(/[^a-zA-Z0-9_-]/g, '') : 'connect_wallet'
+  const referralLink = `${TG_BOT_URL}?startapp=${encodeURIComponent(`ref_${referralCode}`)}`
   const shareText = t.referralShareText
 
   async function copyReferral() {
@@ -1941,6 +2026,14 @@ const protocolName: React.CSSProperties = {
   fontSize: 17,
   fontWeight: 1000,
   marginBottom: 5,
+}
+
+const protocolDetail: React.CSSProperties = {
+  marginTop: 8,
+  color: '#b7c8dc',
+  fontSize: 12,
+  fontWeight: 800,
+  lineHeight: 1.35,
 }
 
 const amneziaBox: React.CSSProperties = {
