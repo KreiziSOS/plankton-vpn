@@ -1,11 +1,56 @@
 import { NextResponse } from 'next/server'
+import { execFile } from 'child_process'
+import { promisify } from 'util'
 import { prisma } from '@/lib/prisma'
 import { checkUserAccess } from '@/lib/access'
 import { getActiveSubscriptionDeviceLimit } from '@/lib/vpn/deviceLimits'
-import { generateOpenVpnConfig } from '@/lib/vpn/generateOpenVpnConfig'
+
+export const runtime = 'nodejs'
 
 const WG_URL = process.env.WG_EASY_URL
 const WG_PASSWORD = process.env.WG_EASY_PASSWORD
+const execFileAsync = promisify(execFile)
+const OPENVPN_COMPOSE_FILE = process.env.OPENVPN_COMPOSE_FILE || 'docker-compose.openvpn.yml'
+const OPENVPN_COMMAND_TIMEOUT_MS = Number(process.env.OPENVPN_COMMAND_TIMEOUT_MS || 120000)
+
+function sanitizeOpenVpnClientName(name: string) {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 64)
+}
+
+async function runOpenVpnCommand(args: string[]) {
+  try {
+    const result = await execFileAsync(
+      'docker',
+      ['compose', '-f', OPENVPN_COMPOSE_FILE, 'run', '--rm', 'openvpn', ...args],
+      {
+        cwd: process.cwd(),
+        timeout: OPENVPN_COMMAND_TIMEOUT_MS,
+        maxBuffer: 1024 * 1024 * 5,
+      },
+    )
+
+    return result.stdout
+  } catch (e: any) {
+    const details = [e.stderr, e.stdout, e.message].filter(Boolean).join('\n').trim()
+    throw new Error(details || 'OpenVPN command failed')
+  }
+}
+
+async function createOpenVpnProfile(deviceName: string) {
+  await runOpenVpnCommand(['easyrsa', 'build-client-full', deviceName, 'nopass'])
+  const profile = await runOpenVpnCommand(['ovpn_getclient', deviceName])
+
+  if (!profile.includes('BEGIN CERTIFICATE') || !profile.includes('BEGIN PRIVATE KEY')) {
+    throw new Error('OpenVPN profile generation returned an invalid profile')
+  }
+
+  return profile
+}
 
 async function loginWgEasy() {
   const res = await fetch(`${WG_URL}/api/session`, {
@@ -70,12 +115,20 @@ export async function POST(req: Request) {
       )
     }
 
-    const name =
+    const rawName =
       protocol === 'amnezia'
         ? `plankton-amnezia-${wallet.slice(2, 10)}`
         : protocol === 'openvpn'
           ? `plankton-openvpn-${wallet.slice(2, 10)}`
           : `plankton-${wallet.slice(2, 10)}`
+    const name = protocol === 'openvpn' ? sanitizeOpenVpnClientName(rawName) : rawName
+
+    if (!name) {
+      return NextResponse.json(
+        { ok: false, error: 'Invalid OpenVPN device name' },
+        { status: 400 },
+      )
+    }
 
     await prisma.user.upsert({
       where: {
@@ -168,7 +221,7 @@ export async function POST(req: Request) {
     }
 
     if (protocol === 'openvpn') {
-      const configText = generateOpenVpnConfig(name)
+      const configText = await createOpenVpnProfile(name)
       const savedDevice = await prisma.vpnDevice.create({
         data: {
           wallet,

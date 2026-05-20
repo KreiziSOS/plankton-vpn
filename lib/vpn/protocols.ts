@@ -16,6 +16,6 @@ export const VPN_PROTOCOLS = {
   openvpn: {
     id: 'openvpn',
     title: 'OpenVPN',
-    description: 'TCP 443 • Fallback • Optional obfuscation',
+    description: 'TCP 9443 • Mobile fallback • Optional obfuscation',
   },
 }

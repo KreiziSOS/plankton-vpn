@@ -101,7 +101,7 @@ export async function GET(req: Request) {
 
       return new Response(device.configText, {
         headers: {
-          'Content-Type': 'application/octet-stream',
+          'Content-Type': 'application/x-openvpn-profile',
           'Content-Disposition': `attachment; filename="${device.name}.ovpn"`,
           'Content-Transfer-Encoding': 'binary',
           'Cache-Control': 'no-store',

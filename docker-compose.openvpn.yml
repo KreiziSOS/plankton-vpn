@@ -5,7 +5,7 @@ services:
     cap_add:
       - NET_ADMIN
     ports:
-      - "443:1194/tcp"
+      - "9443:1194/tcp"
     volumes:
       - plankton_openvpn_data:/etc/openvpn
       - plankton_openvpn_clients:/etc/openvpn/clients

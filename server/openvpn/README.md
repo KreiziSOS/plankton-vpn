@@ -5,7 +5,7 @@ OpenVPN is an additional fallback protocol for networks where WireGuard or Amnez
 Production endpoint:
 
 ```text
-vpn.plankton.ceo:443/tcp
+vpn.plankton.ceo:9443/tcp
 ```
 
 Start the service:
@@ -27,4 +27,11 @@ plankton_openvpn_data
 plankton_openvpn_clients
 ```
 
-The Mini App stores generated OpenVPN client profiles in Prisma `VpnDevice.configText` so profile downloads do not depend on WG Easy.
+The backend creates real clients with:
+
+```bash
+docker compose -f docker-compose.openvpn.yml run --rm openvpn easyrsa build-client-full <deviceName> nopass
+docker compose -f docker-compose.openvpn.yml run --rm openvpn ovpn_getclient <deviceName>
+```
+
+The Mini App stores generated OpenVPN client profiles in Prisma `VpnDevice.configText` so downloads are persistent and do not depend on WG Easy.
