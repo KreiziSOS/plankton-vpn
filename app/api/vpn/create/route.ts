@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { checkUserAccess } from '@/lib/access'
 import { getActiveSubscriptionDeviceLimit } from '@/lib/vpn/deviceLimits'
+import { generateOpenVpnConfig } from '@/lib/vpn/generateOpenVpnConfig'
 
 const WG_URL = process.env.WG_EASY_URL
 const WG_PASSWORD = process.env.WG_EASY_PASSWORD
@@ -46,7 +47,12 @@ export async function POST(req: Request) {
     const body = await req.json()
 
     const wallet = body.wallet
-    const protocol = body.protocol === 'amnezia' ? 'amnezia' : 'wireguard'
+    const protocol =
+      body.protocol === 'amnezia'
+        ? 'amnezia'
+        : body.protocol === 'openvpn'
+          ? 'openvpn'
+          : 'wireguard'
 
     if (!wallet) {
       return NextResponse.json(
@@ -64,12 +70,12 @@ export async function POST(req: Request) {
       )
     }
 
-    const cookie = await loginWgEasy()
-
     const name =
       protocol === 'amnezia'
         ? `plankton-amnezia-${wallet.slice(2, 10)}`
-        : `plankton-${wallet.slice(2, 10)}`
+        : protocol === 'openvpn'
+          ? `plankton-openvpn-${wallet.slice(2, 10)}`
+          : `plankton-${wallet.slice(2, 10)}`
 
     await prisma.user.upsert({
       where: {
@@ -124,10 +130,17 @@ export async function POST(req: Request) {
       })
 
       if (protocolDevices >= 1) {
+        const protocolLabel =
+          protocol === 'amnezia'
+            ? 'Amnezia'
+            : protocol === 'openvpn'
+              ? 'OpenVPN'
+              : 'WireGuard'
+
         return NextResponse.json(
           {
             ok: false,
-            error: `Holder access allows 1 ${protocol === 'amnezia' ? 'Amnezia' : 'WireGuard'} device.`,
+            error: `Holder access allows 1 ${protocolLabel} device.`,
             limit: 1,
             used: protocolDevices,
           },
@@ -153,6 +166,30 @@ export async function POST(req: Request) {
         { status: 403 },
       )
     }
+
+    if (protocol === 'openvpn') {
+      const configText = generateOpenVpnConfig(name)
+      const savedDevice = await prisma.vpnDevice.create({
+        data: {
+          wallet,
+          name,
+          protocol,
+          clientId: name,
+          address: process.env.OPENVPN_HOST || 'vpn.plankton.ceo',
+          configText,
+          enabled: true,
+          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        },
+      })
+
+      return NextResponse.json({
+        ok: true,
+        existed: false,
+        device: savedDevice,
+      })
+    }
+
+    const cookie = await loginWgEasy()
 
     const clients = await getClients(cookie)
 

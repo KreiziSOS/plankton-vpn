@@ -1,0 +1,31 @@
+services:
+  openvpn:
+    image: kylemanna/openvpn:2.4
+    container_name: plankton-openvpn
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "443:1194/tcp"
+    volumes:
+      - plankton_openvpn_data:/etc/openvpn
+      - plankton_openvpn_clients:/etc/openvpn/clients
+    restart: unless-stopped
+
+  openvpn-obfs:
+    image: dweomer/stunnel:latest
+    container_name: plankton-openvpn-obfs
+    profiles:
+      - obfs
+    depends_on:
+      - openvpn
+    ports:
+      - "8443:443/tcp"
+    environment:
+      STUNNEL_SERVICE: openvpn
+      STUNNEL_ACCEPT: 443
+      STUNNEL_CONNECT: openvpn:1194
+    restart: unless-stopped
+
+volumes:
+  plankton_openvpn_data:
+  plankton_openvpn_clients:

@@ -1,4 +1,4 @@
-export type VPNProtocol = 'wireguard' | 'amnezia'
+export type VPNProtocol = 'wireguard' | 'amnezia' | 'openvpn'
 
 export const VPN_PROTOCOLS = {
   wireguard: {
@@ -11,5 +11,11 @@ export const VPN_PROTOCOLS = {
     id: 'amnezia',
     title: 'Amnezia VPN',
     description: 'Better bypass • Anti-blocking • Smart routing',
+  },
+
+  openvpn: {
+    id: 'openvpn',
+    title: 'OpenVPN',
+    description: 'TCP 443 • Fallback • Optional obfuscation',
   },
 }

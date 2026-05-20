@@ -87,6 +87,7 @@ model VpnDevice {
   clientId String?
   address  String?
   protocol String  @default("wireguard")
+  configText String?
 
   enabled   Boolean   @default(true)
   expiresAt DateTime?

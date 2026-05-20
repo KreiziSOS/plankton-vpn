@@ -23,7 +23,7 @@ const X_URL = 'https://x.com/CEO_Plankton'
 
 type Tab = 'home' | 'vpn' | 'market' | 'guide' | 'profile'
 type Lang = 'en' | 'ru' | 'ua' | 'zh'
-type Protocol = 'wireguard' | 'amnezia'
+type Protocol = 'wireguard' | 'amnezia' | 'openvpn'
 
 type VpnDevice = {
   id: string
@@ -58,8 +58,9 @@ const TEXT = {
     download: 'Download Config',
     downloadWireguard: 'Download WireGuard .conf',
     downloadAmnezia: 'Download Amnezia .awg',
+    downloadOpenvpn: 'Download OpenVPN .ovpn',
     openConfigBrowser: 'Open Config in Browser',
-    configOpenNote: 'iPhone: if the file opens in Amnezia by mistake, open the WireGuard app → tap ➕ → "Create from file or archive" → pick the .conf from Downloads.',
+    configOpenNote: 'If the config opens as text, tap Share -> Open in WireGuard / Amnezia / OpenVPN.',
     home: 'Home',
     vpn: 'VPN',
     guide: 'Guide',
@@ -90,10 +91,12 @@ const TEXT = {
     protocol: 'VPN Protocol',
     wireguardDesc: 'Fast • Lightweight • Default',
     amneziaDesc: 'Better bypass • Anti-blocking • Smart routing',
+    openvpnDesc: 'TCP 443 • Fallback • Optional obfuscation',
     recommendedUse: 'Recommended use',
     generatedFile: 'Generated file',
     wgRecommended: 'Everyday VPN access with the official WireGuard app.',
     amRecommended: 'Networks with blocking or DPI where AWG helps bypass filters.',
+    openvpnRecommended: 'Use this fallback if WireGuard or Amnezia is blocked.',
     holderFree: 'Holder / Free',
     holderDuration: 'Free holder VPN access',
     comingSoon: 'Coming soon',
@@ -108,14 +111,14 @@ const TEXT = {
     bestOne: 'Best for testing PLANKTON VPN on phone and laptop.',
     bestThree: 'Best balance for everyday use and several devices.',
     bestYear: 'Best value. Perfect for power users and long-term access.',
-    featureProtocols: 'WireGuard + Amnezia',
+    featureProtocols: 'WireGuard + Amnezia + OpenVPN',
     featureDevices: 'Mobile + Desktop',
     featureExpiry: 'Auto disable on expiry',
     featureTelegram: 'Telegram-native access',
     deviceLimitLine: 'Device limit',
     activeVpnDevices: 'active VPN device(s)',
-    protocolsIncluded: 'WireGuard and Amnezia VPN included.',
-    holderDeviceBadge: '1 WireGuard + 1 Amnezia',
+    protocolsIncluded: 'WireGuard, Amnezia VPN, and OpenVPN included.',
+    holderDeviceBadge: '1 per protocol',
     payTon: 'Pay TON',
     payPlankton: 'Pay $PLANKTON',
     pricesPoweredBy: 'Prices powered by',
@@ -123,6 +126,7 @@ const TEXT = {
     pricePlanktonLabel: '$PLANKTON',
     guideWireguardDesc: 'Fast, lightweight and default VPN protocol.',
     guideAmneziaDesc: 'Better bypass, anti-blocking and AWG profile support.',
+    guideOpenvpnDesc: 'TCP 443 fallback for restrictive networks.',
     guideLimitsTitle: 'Device limits',
     wgStep1: 'Install the official WireGuard app.',
     wgStep2: 'Open VPN tab and select WireGuard.',
@@ -133,7 +137,7 @@ const TEXT = {
     amStep3: 'Generate and download your .awg profile.',
     amStep4: 'Import the .awg profile into Amnezia and enable VPN.',
     openAmnezia: 'Open Amnezia Official',
-    limitHolder: 'Holder access gives 1 WireGuard device and 1 Amnezia device.',
+    limitHolder: 'Holder access gives 1 WireGuard, 1 Amnezia, and 1 OpenVPN device.',
     limitOne: '1 Month plan gives 2 VPN devices.',
     limitThree: '3 Months plan gives 3 VPN devices.',
     limitYear: '12 Months plan gives 5 VPN devices.',
@@ -146,6 +150,8 @@ const TEXT = {
     installProtocol: 'Install',
     confConfig: '.conf config',
     awgProfile: '.awg profile',
+    ovpnProfile: '.ovpn profile',
+    fallbackHint: 'If WireGuard is blocked, generate an OpenVPN TCP 443 profile.',
     referralTitle: 'Referral Program',
     referralSubtitle: 'Invite friends and earn from paid VPN subscriptions.',
     referralReward: '5 active paid referrals → 1 year VPN free',
@@ -199,8 +205,9 @@ const TEXT = {
     download: 'Скачать конфиг',
     downloadWireguard: 'Скачать WireGuard .conf',
     downloadAmnezia: 'Скачать Amnezia .awg',
+    downloadOpenvpn: 'Скачать OpenVPN .ovpn',
     openConfigBrowser: 'Открыть конфиг в браузере',
-    configOpenNote: 'iPhone: если файл по ошибке открылся в Amnezia, откройте приложение WireGuard → нажмите ➕ → «Создать из файла или архива» → выберите .conf из Загрузок.',
+    configOpenNote: 'Если конфиг открылся как текст, нажмите Share -> Open in WireGuard / Amnezia / OpenVPN.',
     home: 'Главная',
     vpn: 'VPN',
     guide: 'Гайд',
@@ -231,10 +238,12 @@ const TEXT = {
     protocol: 'VPN протокол',
     wireguardDesc: 'Быстрый • Лёгкий • По умолчанию',
     amneziaDesc: 'Лучше обход • Антиблокировка • Smart routing',
+    openvpnDesc: 'TCP 443 • Резервный доступ • Опциональная обфускация',
     recommendedUse: 'Рекомендуемое использование',
     generatedFile: 'Формат файла',
     wgRecommended: 'Ежедневный VPN-доступ через официальное приложение WireGuard.',
     amRecommended: 'Сети с блокировками или DPI, где AWG помогает обходить фильтры.',
+    openvpnRecommended: 'Используйте как запасной вариант, если WireGuard или Amnezia заблокированы.',
     holderFree: 'Холдер / бесплатно',
     holderDuration: 'Бесплатный VPN-доступ для холдеров',
     comingSoon: 'Скоро',
@@ -249,14 +258,14 @@ const TEXT = {
     bestOne: 'Лучше всего для теста PLANKTON VPN на телефоне и ноутбуке.',
     bestThree: 'Оптимальный баланс для ежедневного использования и нескольких устройств.',
     bestYear: 'Лучшее предложение для активных пользователей и долгого доступа.',
-    featureProtocols: 'WireGuard + Amnezia',
+    featureProtocols: 'WireGuard + Amnezia + OpenVPN',
     featureDevices: 'Мобильный + ПК',
     featureExpiry: 'Автоотключение после окончания доступа',
     featureTelegram: 'Доступ прямо через Telegram',
     deviceLimitLine: 'Лимит устройств',
     activeVpnDevices: 'активных VPN устройств(а)',
-    protocolsIncluded: 'WireGuard и Amnezia VPN включены.',
-    holderDeviceBadge: '1 WireGuard + 1 Amnezia',
+    protocolsIncluded: 'WireGuard, Amnezia VPN и OpenVPN включены.',
+    holderDeviceBadge: '1 на протокол',
     payTon: 'Оплатить TON',
     payPlankton: 'Оплатить $PLANKTON',
     pricesPoweredBy: 'Цены обновляются через',
@@ -264,6 +273,7 @@ const TEXT = {
     pricePlanktonLabel: '$PLANKTON',
     guideWireguardDesc: 'Быстрый, лёгкий и основной VPN-протокол.',
     guideAmneziaDesc: 'Лучше для обхода блокировок, антиблокинга и AWG профиля.',
+    guideOpenvpnDesc: 'Резервный TCP 443 для сетей со строгими ограничениями.',
     guideLimitsTitle: 'Лимиты устройств',
     wgStep1: 'Установи официальное приложение WireGuard.',
     wgStep2: 'Открой вкладку VPN и выбери WireGuard.',
@@ -274,7 +284,7 @@ const TEXT = {
     amStep3: 'Создай и скачай .awg профиль.',
     amStep4: 'Импортируй .awg профиль в Amnezia и включи VPN.',
     openAmnezia: 'Открыть Amnezia Official',
-    limitHolder: 'Холдерский доступ даёт 1 устройство WireGuard и 1 устройство Amnezia.',
+    limitHolder: 'Холдерский доступ даёт 1 WireGuard, 1 Amnezia и 1 OpenVPN устройство.',
     limitOne: 'Тариф 1 месяц даёт 2 VPN устройства.',
     limitThree: 'Тариф 3 месяца даёт 3 VPN устройства.',
     limitYear: 'Тариф 12 месяцев даёт 5 VPN устройств.',
@@ -287,6 +297,8 @@ const TEXT = {
     installProtocol: 'Установить',
     confConfig: '.conf конфиг',
     awgProfile: '.awg профиль',
+    ovpnProfile: '.ovpn профиль',
+    fallbackHint: 'Если WireGuard заблокирован, создайте профиль OpenVPN TCP 443.',
     referralTitle: 'Реферальная программа',
     referralSubtitle: 'Приглашай друзей и зарабатывай с платных VPN-подписок.',
     referralReward: '5 активных платных рефералов → 1 год VPN бесплатно',
@@ -340,8 +352,9 @@ const TEXT = {
     download: 'Завантажити конфіг',
     downloadWireguard: 'Завантажити WireGuard .conf',
     downloadAmnezia: 'Завантажити Amnezia .awg',
+    downloadOpenvpn: 'Завантажити OpenVPN .ovpn',
     openConfigBrowser: 'Відкрити конфіг у браузері',
-    configOpenNote: 'iPhone: якщо файл помилково відкрився в Amnezia, відкрийте застосунок WireGuard → натисніть ➕ → «Створити з файлу або архіву» → виберіть .conf із Завантажень.',
+    configOpenNote: 'Якщо конфіг відкрився як текст, натисніть Share -> Open in WireGuard / Amnezia / OpenVPN.',
     home: 'Головна',
     vpn: 'VPN',
     guide: 'Гайд',
@@ -372,10 +385,12 @@ const TEXT = {
     protocol: 'VPN протокол',
     wireguardDesc: 'Швидкий • Легкий • За замовчуванням',
     amneziaDesc: 'Кращий обхід • Антиблокування • Smart routing',
+    openvpnDesc: 'TCP 443 • Резервний доступ • Опційна обфускація',
     recommendedUse: 'Рекомендоване використання',
     generatedFile: 'Формат файлу',
     wgRecommended: 'Щоденний VPN-доступ через офіційний застосунок WireGuard.',
     amRecommended: 'Мережі з блокуваннями або DPI, де AWG допомагає обходити фільтри.',
+    openvpnRecommended: 'Використовуйте як запасний варіант, якщо WireGuard або Amnezia заблоковані.',
     holderFree: 'Холдер / безкоштовно',
     holderDuration: 'Безкоштовний VPN-доступ для холдерів',
     comingSoon: 'Скоро',
@@ -390,14 +405,14 @@ const TEXT = {
     bestOne: 'Найкраще для тесту PLANKTON VPN на телефоні та ноутбуці.',
     bestThree: 'Оптимальний баланс для щоденного використання та кількох пристроїв.',
     bestYear: 'Найкраща пропозиція для активних користувачів і довгого доступу.',
-    featureProtocols: 'WireGuard + Amnezia',
+    featureProtocols: 'WireGuard + Amnezia + OpenVPN',
     featureDevices: 'Мобільний + ПК',
     featureExpiry: 'Автовимкнення після завершення доступу',
     featureTelegram: 'Доступ прямо через Telegram',
     deviceLimitLine: 'Ліміт пристроїв',
     activeVpnDevices: 'активних VPN пристроїв',
-    protocolsIncluded: 'WireGuard і Amnezia VPN включені.',
-    holderDeviceBadge: '1 WireGuard + 1 Amnezia',
+    protocolsIncluded: 'WireGuard, Amnezia VPN і OpenVPN включені.',
+    holderDeviceBadge: '1 на протокол',
     payTon: 'Оплатити TON',
     payPlankton: 'Оплатити $PLANKTON',
     pricesPoweredBy: 'Ціни оновлюються через',
@@ -405,6 +420,7 @@ const TEXT = {
     pricePlanktonLabel: '$PLANKTON',
     guideWireguardDesc: 'Швидкий, легкий та основний VPN-протокол.',
     guideAmneziaDesc: 'Краще для обходу блокувань, антиблокінгу та AWG профілю.',
+    guideOpenvpnDesc: 'Резервний TCP 443 для мереж зі строгими обмеженнями.',
     guideLimitsTitle: 'Ліміти пристроїв',
     wgStep1: 'Встанови офіційний застосунок WireGuard.',
     wgStep2: 'Відкрий вкладку VPN і вибери WireGuard.',
@@ -415,7 +431,7 @@ const TEXT = {
     amStep3: 'Створи та завантаж .awg профіль.',
     amStep4: 'Імпортуй .awg профіль в Amnezia і увімкни VPN.',
     openAmnezia: 'Відкрити Amnezia Official',
-    limitHolder: 'Холдерський доступ дає 1 пристрій WireGuard і 1 пристрій Amnezia.',
+    limitHolder: 'Холдерський доступ дає 1 WireGuard, 1 Amnezia і 1 OpenVPN пристрій.',
     limitOne: 'Тариф 1 місяць дає 2 VPN пристрої.',
     limitThree: 'Тариф 3 місяці дає 3 VPN пристрої.',
     limitYear: 'Тариф 12 місяців дає 5 VPN пристроїв.',
@@ -428,6 +444,8 @@ const TEXT = {
     installProtocol: 'Встановити',
     confConfig: '.conf конфіг',
     awgProfile: '.awg профіль',
+    ovpnProfile: '.ovpn профіль',
+    fallbackHint: 'Якщо WireGuard заблокований, створіть профіль OpenVPN TCP 443.',
     referralTitle: 'Реферальна програма',
     referralSubtitle: 'Запрошуй друзів і заробляй з платних VPN-підписок.',
     referralReward: '5 активних платних рефералів → 1 рік VPN безкоштовно',
@@ -481,8 +499,9 @@ const TEXT = {
     download: '下载配置',
     downloadWireguard: '下载 WireGuard .conf',
     downloadAmnezia: '下载 Amnezia .awg',
+    downloadOpenvpn: '下载 OpenVPN .ovpn',
     openConfigBrowser: '在浏览器中打开配置',
-    configOpenNote: 'iPhone：如果文件错误地在 Amnezia 中打开，请打开 WireGuard 应用 → 点击 ➕ → "从文件或归档创建" → 从下载中选择 .conf 文件。',
+    configOpenNote: '如果配置以文本形式打开，请点 Share -> Open in WireGuard / Amnezia / OpenVPN。',
     home: '首页',
     vpn: 'VPN',
     guide: '指南',
@@ -513,10 +532,12 @@ const TEXT = {
     protocol: 'VPN 协议',
     wireguardDesc: '快速 • 轻量 • 默认',
     amneziaDesc: '更好绕过 • 抗封锁 • 智能路由',
+    openvpnDesc: 'TCP 443 • 备用连接 • 可选混淆',
     recommendedUse: '推荐用途',
     generatedFile: '生成文件',
     wgRecommended: '使用官方 WireGuard 应用进行日常 VPN 访问。',
     amRecommended: '适合存在封锁或 DPI、需要 AWG 绕过过滤的网络。',
+    openvpnRecommended: '如果 WireGuard 或 Amnezia 被阻断，请使用此备用方案。',
     holderFree: '持有者 / 免费',
     holderDuration: '持有者免费 VPN 访问',
     comingSoon: '即将推出',
@@ -531,14 +552,14 @@ const TEXT = {
     bestOne: '适合在手机和笔记本上测试 PLANKTON VPN。',
     bestThree: '适合日常使用和多设备的平衡选择。',
     bestYear: '最划算，适合重度用户和长期访问。',
-    featureProtocols: 'WireGuard + Amnezia',
+    featureProtocols: 'WireGuard + Amnezia + OpenVPN',
     featureDevices: '手机 + 桌面端',
     featureExpiry: '到期自动禁用',
     featureTelegram: 'Telegram 原生访问',
     deviceLimitLine: '设备限制',
     activeVpnDevices: '台活跃 VPN 设备',
-    protocolsIncluded: '包含 WireGuard 和 Amnezia VPN。',
-    holderDeviceBadge: '1 WireGuard + 1 Amnezia',
+    protocolsIncluded: '包含 WireGuard、Amnezia VPN 和 OpenVPN。',
+    holderDeviceBadge: '每种协议 1 台',
     payTon: '支付 TON',
     payPlankton: '支付 $PLANKTON',
     pricesPoweredBy: '价格由以下服务提供',
@@ -546,6 +567,7 @@ const TEXT = {
     pricePlanktonLabel: '$PLANKTON',
     guideWireguardDesc: '快速、轻量、默认 VPN 协议。',
     guideAmneziaDesc: '更适合绕过封锁、抗干扰和 AWG 配置。',
+    guideOpenvpnDesc: '面向严格网络限制的 TCP 443 备用方案。',
     guideLimitsTitle: '设备限制',
     wgStep1: '安装官方 WireGuard 应用。',
     wgStep2: '打开 VPN 标签并选择 WireGuard。',
@@ -556,7 +578,7 @@ const TEXT = {
     amStep3: '生成并下载 .awg 配置。',
     amStep4: '将 .awg 配置导入 Amnezia 并开启 VPN。',
     openAmnezia: '打开 Amnezia 官网',
-    limitHolder: '持有者权限提供 1 台 WireGuard 设备和 1 台 Amnezia 设备。',
+    limitHolder: '持有者权限提供 1 台 WireGuard、1 台 Amnezia 和 1 台 OpenVPN 设备。',
     limitOne: '1 个月套餐提供 2 台 VPN 设备。',
     limitThree: '3 个月套餐提供 3 台 VPN 设备。',
     limitYear: '12 个月套餐提供 5 台 VPN 设备。',
@@ -569,6 +591,8 @@ const TEXT = {
     installProtocol: '安装',
     confConfig: '.conf 配置',
     awgProfile: '.awg 配置',
+    ovpnProfile: '.ovpn 配置',
+    fallbackHint: '如果 WireGuard 被阻断，请生成 OpenVPN TCP 443 配置。',
     referralTitle: '推荐计划',
     referralSubtitle: '邀请朋友并从付费 VPN 订阅中赚取奖励。',
     referralReward: '5 个活跃付费推荐 → 免费 1 年 VPN',
@@ -893,7 +917,12 @@ export default function MiniAppClient() {
   
       const deviceName = encodeURIComponent(data.device.name)
   
-      const createdProtocol = data.device.protocol === 'amnezia' ? 'amnezia' : 'wireguard'
+      const createdProtocol =
+        data.device.protocol === 'amnezia'
+          ? 'amnezia'
+          : data.device.protocol === 'openvpn'
+            ? 'openvpn'
+            : 'wireguard'
 
       setConfigUrl(`/api/vpn/download?name=${deviceName}&protocol=${createdProtocol}`)
       setConfigProtocol(createdProtocol)
@@ -1184,11 +1213,19 @@ function ProtocolSelector({ t, protocol, setProtocol }: any) {
       recommended: t.amRecommended,
       fileType: t.awgProfile,
     },
+    {
+      id: 'openvpn',
+      title: 'OpenVPN',
+      desc: t.openvpnDesc,
+      recommended: t.openvpnRecommended,
+      fileType: t.ovpnProfile,
+    },
   ]
 
   return (
     <div style={protocolWrap}>
       <div style={sectionTitle}>{t.protocol}</div>
+      <div style={marketIntro}>{t.fallbackHint}</div>
 
       {options.map((option) => (
         <button
@@ -1435,6 +1472,13 @@ function Guide({ t }: any) {
       </div>
 
       <div style={guideProtocolCard}>
+        <div style={guideProtocolTitle}>OpenVPN</div>
+        <div style={muted}>{t.guideOpenvpnDesc}</div>
+        <GuideStep n="1" text={t.fallbackHint} />
+        <GuideStep n="2" text={t.openvpnRecommended} />
+      </div>
+
+      <div style={guideProtocolCard}>
         <div style={guideProtocolTitle}>{t.guideFaqTitle}</div>
         <div style={muted}>{t.faqAmneziaConflictTitle}</div>
         <GuideStep n="1" text={t.faqStep1} />
@@ -1537,10 +1581,25 @@ function MyVpnDevices({ t, wallet, devices, devicesLoading, loadDevices, deleteD
       )}
 
       {wallet && devices.map((device: VpnDevice) => {
-        const protocolId = device.protocol === 'amnezia' ? 'amnezia' : 'wireguard'
-        const deviceProtocol = protocolId === 'amnezia' ? 'Amnezia' : 'WireGuard'
+        const protocolId =
+          device.protocol === 'amnezia'
+            ? 'amnezia'
+            : device.protocol === 'openvpn'
+              ? 'openvpn'
+              : 'wireguard'
+        const deviceProtocol =
+          protocolId === 'amnezia'
+            ? 'Amnezia'
+            : protocolId === 'openvpn'
+              ? 'OpenVPN'
+              : 'WireGuard'
         const deviceFile = `/api/vpn/download?name=${encodeURIComponent(device.name)}&protocol=${protocolId}`
-        const downloadLabel = protocolId === 'amnezia' ? t.downloadAmnezia : t.downloadWireguard
+        const downloadLabel =
+          protocolId === 'amnezia'
+            ? t.downloadAmnezia
+            : protocolId === 'openvpn'
+              ? t.downloadOpenvpn
+              : t.downloadWireguard
         const expiresAt = device.expiresAt
           ? new Date(device.expiresAt).toLocaleDateString()
           : '—'
@@ -1598,13 +1657,14 @@ function MyVpnDevices({ t, wallet, devices, devicesLoading, loadDevices, deleteD
 
 function ProtocolSetupPanel({ protocol, t, loading, generateConfig, configUrl, configProtocol }: any) {
   const isAmnezia = protocol === 'amnezia'
-  const title = isAmnezia ? 'Amnezia VPN' : 'WireGuard'
-  const desc = isAmnezia ? t.amneziaDesc : t.wireguardDesc
-  const installUrl = isAmnezia ? 'https://amnezia.org/' : WIREGUARD_URL
-  const fileType = isAmnezia ? t.awgProfile : t.confConfig
-  const logo = isAmnezia ? '/amnezia-logo.png' : '/assets/wireguard-logo.png'
+  const isOpenVpn = protocol === 'openvpn'
+  const title = isAmnezia ? 'Amnezia VPN' : isOpenVpn ? 'OpenVPN' : 'WireGuard'
+  const desc = isAmnezia ? t.amneziaDesc : isOpenVpn ? t.openvpnDesc : t.wireguardDesc
+  const installUrl = isAmnezia ? 'https://amnezia.org/' : isOpenVpn ? 'https://openvpn.net/client/' : WIREGUARD_URL
+  const fileType = isAmnezia ? t.awgProfile : isOpenVpn ? t.ovpnProfile : t.confConfig
+  const logo = isAmnezia ? '/amnezia-logo.png' : isOpenVpn ? '/assets/logo.png' : '/assets/wireguard-logo.png'
   const canDownload = configUrl && configProtocol === protocol
-  const downloadLabel = isAmnezia ? t.downloadAmnezia : t.downloadWireguard
+  const downloadLabel = isAmnezia ? t.downloadAmnezia : isOpenVpn ? t.downloadOpenvpn : t.downloadWireguard
 
   return (
     <div style={protocolSetupCard}>
@@ -1621,7 +1681,7 @@ function ProtocolSetupPanel({ protocol, t, loading, generateConfig, configUrl, c
       </div>
 
       <div style={protocolFeatureGrid}>
-        <div style={protocolFeature}>{t.recommendedUse}: {isAmnezia ? t.amRecommended : t.wgRecommended}</div>
+        <div style={protocolFeature}>{t.recommendedUse}: {isAmnezia ? t.amRecommended : isOpenVpn ? t.openvpnRecommended : t.wgRecommended}</div>
         <div style={protocolFeature}>{t.generatedFile}: {fileType}</div>
         <div style={protocolFeature}>{t.privateVpnAccess}</div>
         <div style={protocolFeature}>{t.stableMobileConfig}</div>

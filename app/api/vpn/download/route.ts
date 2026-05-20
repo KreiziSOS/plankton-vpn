@@ -33,7 +33,7 @@ export async function GET(req: Request) {
     const name = searchParams.get('name')
     const requestedProtocol = searchParams.get('protocol')
     const protocolFilter =
-      requestedProtocol === 'amnezia' || requestedProtocol === 'wireguard'
+      requestedProtocol === 'amnezia' || requestedProtocol === 'wireguard' || requestedProtocol === 'openvpn'
         ? requestedProtocol
         : undefined
 
@@ -84,6 +84,31 @@ export async function GET(req: Request) {
       )
     }
 
+    const protocol =
+      device.protocol === 'amnezia'
+        ? 'amnezia'
+        : device.protocol === 'openvpn'
+          ? 'openvpn'
+          : 'wireguard'
+
+    if (protocol === 'openvpn') {
+      if (!device.configText) {
+        return NextResponse.json(
+          { ok: false, error: 'OpenVPN profile missing' },
+          { status: 500 },
+        )
+      }
+
+      return new Response(device.configText, {
+        headers: {
+          'Content-Type': 'application/octet-stream',
+          'Content-Disposition': `attachment; filename="${device.name}.ovpn"`,
+          'Content-Transfer-Encoding': 'binary',
+          'Cache-Control': 'no-store',
+        },
+      })
+    }
+
     if (!device.clientId) {
       return NextResponse.json(
         { ok: false, error: 'VPN clientId missing' },
@@ -114,13 +139,10 @@ export async function GET(req: Request) {
     const rawConfig = await configRes.text()
     const stableConfig = enhanceWireGuardConfig(rawConfig)
 
-    const protocol = device.protocol === 'amnezia' ? 'amnezia' : 'wireguard'
-
-    // const finalConfig =
-    //   protocol === 'amnezia'
-    //     ? generateAmneziaConfig(stableConfig)
-    //     : stableConfig
-    const finalConfig = stableConfig
+    const finalConfig =
+      protocol === 'amnezia'
+        ? generateAmneziaConfig(stableConfig)
+        : stableConfig
 
     const filename =
       protocol === 'amnezia'
@@ -129,8 +151,9 @@ export async function GET(req: Request) {
 
     return new Response(finalConfig, {
       headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
+        'Content-Type': 'application/octet-stream',
         'Content-Disposition': `attachment; filename="${filename}"`,
+        'Content-Transfer-Encoding': 'binary',
         'Cache-Control': 'no-store',
       },
     })
