@@ -107,35 +107,39 @@ export async function POST(req: Request) {
     })
 
     if (paymentJustPaid) {
-      const purchaser = await prisma.user.findUnique({
-        where: { wallet: payment.wallet },
-        select: { id: true, referrerId: true, referrer: { select: { id: true, bonusYearGranted: true } } },
-      })
-
-      if (purchaser?.referrerId && purchaser.referrer) {
-        const earningTon = Number(payment.amountToken) / 1e9 * 0.1
-
-        await prisma.referralEarning.create({
-          data: {
-            userId: purchaser.referrerId,
-            referralId: purchaser.id,
-            paymentId: payment.id,
-            amountTon: earningTon,
-            status: 'available',
-          },
-        }).catch(e => console.error('[referral] earning skip:', e.message))
-
-        const paidRefCount = await prisma.user.count({
-          where: { referrerId: purchaser.referrerId, payments: { some: { status: 'PAID' } } },
+      try {
+        const purchaser = await prisma.user.findUnique({
+          where: { wallet: payment.wallet },
+          select: { id: true, referrerId: true, referrer: { select: { id: true, bonusYearGranted: true } } },
         })
 
-        if (paidRefCount >= 5 && !purchaser.referrer.bonusYearGranted) {
-          await prisma.user.update({
-            where: { id: purchaser.referrerId },
-            data: { bonusYearGranted: true },
+        if (purchaser?.referrerId && purchaser.referrer) {
+          const earningTon = Number(payment.amountToken) / 1e9 * 0.1
+
+          await prisma.referralEarning.create({
+            data: {
+              userId: purchaser.referrerId,
+              referralId: purchaser.id,
+              paymentId: payment.id,
+              amountTon: earningTon,
+              status: 'available',
+            },
+          }).catch(e => console.error('[referral] earning skip:', e.message))
+
+          const paidRefCount = await prisma.user.count({
+            where: { referrerId: purchaser.referrerId, payments: { some: { status: 'PAID' } } },
           })
-          console.log(`[referral] bonus year unlocked for ${purchaser.referrerId}`)
+
+          if (paidRefCount >= 5 && !purchaser.referrer.bonusYearGranted) {
+            await prisma.user.update({
+              where: { id: purchaser.referrerId },
+              data: { bonusYearGranted: true },
+            })
+            console.log(`[referral] bonus year unlocked for ${purchaser.referrerId}`)
+          }
         }
+      } catch (e) {
+        console.error('[referral] ton earning error:', e)
       }
     }
 
