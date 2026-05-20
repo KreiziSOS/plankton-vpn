@@ -44,9 +44,34 @@ async function runOpenVpnCommand(args: string[]) {
 async function createOpenVpnProfile(deviceName: string) {
   await runOpenVpnCommand(['easyrsa', 'build-client-full', deviceName, 'nopass'])
   const profile = await runOpenVpnCommand(['ovpn_getclient', deviceName])
+  const hasCa = profile.includes('<ca>') && profile.includes('</ca>')
+  const hasCert = profile.includes('<cert>') && profile.includes('</cert>')
+  const hasKey = profile.includes('<key>') && profile.includes('</key>')
+  const hasTlsAuth = profile.includes('<tls-auth>') && profile.includes('</tls-auth>')
 
-  if (!profile.includes('BEGIN CERTIFICATE') || !profile.includes('BEGIN PRIVATE KEY')) {
-    throw new Error('OpenVPN profile generation returned an invalid profile')
+  console.log('OpenVPN profile generated', {
+    deviceName,
+    stdoutLength: profile.length,
+    hasCa,
+    hasCert,
+    hasKey,
+    hasTlsAuth,
+  })
+
+  if (!hasCa) {
+    throw new Error('Invalid OpenVPN profile: missing CA block')
+  }
+
+  if (!hasCert) {
+    throw new Error('Invalid OpenVPN profile: missing cert block')
+  }
+
+  if (!hasKey) {
+    throw new Error('Invalid OpenVPN profile: missing key block')
+  }
+
+  if (!hasTlsAuth) {
+    throw new Error('Invalid OpenVPN profile: missing tls-auth block')
   }
 
   return profile
