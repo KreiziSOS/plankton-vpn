@@ -68,6 +68,11 @@ async function ensureRefCode(wallet: string) {
 bot.command('start', async (ctx) => {
   const lang = await getUserLanguage(ctx)
 
+  const startParam = ctx.match?.toString() ?? ''
+  if (startParam.startsWith('ref_')) {
+    console.log(`[ref] user ${ctx.from?.id} arrived via refCode=${startParam.slice(4)}`)
+  }
+
   await ctx.replyWithPhoto(
     new InputFile('./bot/assets/welcome.png'),
     {

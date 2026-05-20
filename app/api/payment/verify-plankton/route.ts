@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { VPN_PRICING } from '@/lib/pricing'
 import { Address } from '@ton/core'
 import { tonapiHeaders } from '@/lib/tonapi'
+import { getTonUsdRate } from '@/lib/rates'
 
 const PAYMENT_WALLET = process.env.NEXT_PUBLIC_PAYMENT_WALLET!
 const JETTON_MASTER = process.env.PLANKTON_JETTON_ADDRESS!
@@ -77,6 +78,8 @@ export async function POST(req: Request) {
     const expiresAt = new Date()
     expiresAt.setDate(expiresAt.getDate() + pricing.days)
 
+    let paymentJustPaid = false
+
     await prisma.$transaction(async (tx) => {
       // Setting txHash = eventId inside updateMany relies on the @unique constraint:
       // if another payment already claimed this event, the write will throw P2002
@@ -88,6 +91,8 @@ export async function POST(req: Request) {
 
       if (updated.count === 0) return
 
+      paymentJustPaid = true
+
       await tx.subscription.create({
         data: {
           wallet: payment.wallet,
@@ -98,6 +103,44 @@ export async function POST(req: Request) {
         },
       })
     })
+
+    if (paymentJustPaid) {
+      const purchaser = await prisma.user.findUnique({
+        where: { wallet: payment.wallet },
+        select: { id: true, referrerId: true, referrer: { select: { id: true, bonusYearGranted: true } } },
+      })
+
+      if (purchaser?.referrerId && purchaser.referrer) {
+        try {
+          const tonRate = await getTonUsdRate()
+          const earningTon = (VPN_PRICING[payment.plan].tonUsd / tonRate) * 0.1
+
+          await prisma.referralEarning.create({
+            data: {
+              userId: purchaser.referrerId,
+              referralId: purchaser.id,
+              paymentId: payment.id,
+              amountTon: earningTon,
+              status: 'available',
+            },
+          }).catch(e => console.error('[referral] earning skip:', e.message))
+
+          const paidRefCount = await prisma.user.count({
+            where: { referrerId: purchaser.referrerId, payments: { some: { status: 'PAID' } } },
+          })
+
+          if (paidRefCount >= 5 && !purchaser.referrer.bonusYearGranted) {
+            await prisma.user.update({
+              where: { id: purchaser.referrerId },
+              data: { bonusYearGranted: true },
+            })
+            console.log(`[referral] bonus year unlocked for ${purchaser.referrerId}`)
+          }
+        } catch (e) {
+          console.error('[referral] plankton earning error:', e)
+        }
+      }
+    }
 
     return NextResponse.json({ ok: true, verified: true })
   } catch (e: any) {

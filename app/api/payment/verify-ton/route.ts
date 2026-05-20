@@ -81,6 +81,8 @@ export async function POST(req: Request) {
     const expiresAt = new Date()
     expiresAt.setDate(expiresAt.getDate() + pricing.days)
 
+    let paymentJustPaid = false
+
     await prisma.$transaction(async (tx) => {
       // updateMany with status: 'PENDING' is an atomic CAS — only one concurrent
       // request will get count === 1; the rest see count === 0 and skip.
@@ -90,6 +92,8 @@ export async function POST(req: Request) {
       })
 
       if (updated.count === 0) return
+
+      paymentJustPaid = true
 
       await tx.subscription.create({
         data: {
@@ -101,6 +105,39 @@ export async function POST(req: Request) {
         },
       })
     })
+
+    if (paymentJustPaid) {
+      const purchaser = await prisma.user.findUnique({
+        where: { wallet: payment.wallet },
+        select: { id: true, referrerId: true, referrer: { select: { id: true, bonusYearGranted: true } } },
+      })
+
+      if (purchaser?.referrerId && purchaser.referrer) {
+        const earningTon = Number(payment.amountToken) / 1e9 * 0.1
+
+        await prisma.referralEarning.create({
+          data: {
+            userId: purchaser.referrerId,
+            referralId: purchaser.id,
+            paymentId: payment.id,
+            amountTon: earningTon,
+            status: 'available',
+          },
+        }).catch(e => console.error('[referral] earning skip:', e.message))
+
+        const paidRefCount = await prisma.user.count({
+          where: { referrerId: purchaser.referrerId, payments: { some: { status: 'PAID' } } },
+        })
+
+        if (paidRefCount >= 5 && !purchaser.referrer.bonusYearGranted) {
+          await prisma.user.update({
+            where: { id: purchaser.referrerId },
+            data: { bonusYearGranted: true },
+          })
+          console.log(`[referral] bonus year unlocked for ${purchaser.referrerId}`)
+        }
+      }
+    }
 
     return NextResponse.json({ ok: true, verified: true })
   } catch (e: any) {

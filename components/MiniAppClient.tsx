@@ -668,15 +668,37 @@ export default function MiniAppClient() {
     setConfigProtocol(null)
   }
 
-  // Route to plans tab when opened via bot subscription button or deep link
+  // Route to plans tab or capture referral code from deep link
   useEffect(() => {
     const urlParam = new URLSearchParams(window.location.search).get('startapp')
     const tgParam  = window.Telegram?.WebApp?.initDataUnsafe?.start_param
-    if ((urlParam ?? tgParam) === 'plans') {
+    const param = urlParam ?? tgParam
+    if (param === 'plans') {
       setTab('market')
       setForcePlans(true)
+    } else if (param?.startsWith('ref_')) {
+      localStorage.setItem('pendingRefCode', param.slice(4))
     }
   }, [])
+
+  // Claim pending referral once wallet is connected
+  useEffect(() => {
+    if (!wallet) return
+    const refCode = localStorage.getItem('pendingRefCode')
+    if (!refCode) return
+    fetch('/api/referral/claim', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ wallet, refCode }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok || data.error === 'Already referred' || data.error === 'Referral window expired') {
+          localStorage.removeItem('pendingRefCode')
+        }
+      })
+      .catch(() => {})
+  }, [wallet])
 
   useEffect(() => {
     document.documentElement.style.touchAction = 'manipulation'
@@ -1632,9 +1654,26 @@ function ProtocolSetupPanel({ protocol, t, loading, generateConfig, configUrl, c
 function ReferralProgram({ wallet, t }: any) {
   const [referralLink, setReferralLink] = useState('')
   const [referralLoading, setReferralLoading] = useState(false)
-  const activePaidRefs = 0
-  const totalRefs = 0
-  const earnedTon = 0
+  const [stats, setStats] = useState<{
+    totalRefs: number
+    activePaidRefs: number
+    earnedTon: number
+    withdrawnTon: number
+    bonusYearAvailable: boolean
+    bonusYearGranted: boolean
+  } | null>(null)
+
+  useEffect(() => {
+    if (!wallet) { setStats(null); return }
+    fetch(`/api/referral/stats?wallet=${encodeURIComponent(wallet)}`)
+      .then(r => r.json())
+      .then(data => { if (data.ok) setStats(data) })
+      .catch(() => {})
+  }, [wallet])
+
+  const totalRefs = stats?.totalRefs ?? 0
+  const activePaidRefs = stats?.activePaidRefs ?? 0
+  const earnedTon = stats?.earnedTon ?? 0
   const freeYearTarget = 5
   const progress = Math.min(activePaidRefs, freeYearTarget)
   const shareText = t.referralShareText

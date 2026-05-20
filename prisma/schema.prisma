@@ -31,6 +31,9 @@ model User {
   telegramId String? @unique
   refCode    String? @unique
   language   String?
+  referrerId       String?
+  referredAt       DateTime?
+  bonusYearGranted Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -38,6 +41,41 @@ model User {
   devices       VpnDevice[]
   payments      Payment[]
   subscriptions Subscription[]
+  referrer          User?                @relation("UserReferrals", fields: [referrerId], references: [id], onDelete: SetNull)
+  referrals         User[]               @relation("UserReferrals")
+  earningsReceived  ReferralEarning[]    @relation("EarningRecipient")
+  earningsTriggered ReferralEarning[]    @relation("EarningSource")
+  withdrawals       ReferralWithdrawal[]
+}
+
+model ReferralEarning {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation("EarningRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  referralId String
+  referral   User     @relation("EarningSource", fields: [referralId], references: [id], onDelete: Cascade)
+  paymentId  String   @unique
+  amountTon  Decimal  @db.Decimal(20, 9)
+  status     String   @default("available")
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([referralId])
+}
+
+model ReferralWithdrawal {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amountTon   Decimal   @db.Decimal(20, 9)
+  walletAddr  String
+  status      String    @default("pending")
+  txHash      String?
+  createdAt   DateTime  @default(now())
+  processedAt DateTime?
+
+  @@index([userId])
+  @@index([status])
 }
 
 model VpnDevice {
