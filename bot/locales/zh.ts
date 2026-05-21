@@ -4,7 +4,7 @@ const zh: LocaleData = {
   welcome:
     `🐋 *欢迎使用 Plankton VPN*\n\n` +
     `Plankton VPN 当前处于 holders\\-only beta。\n\n` +
-    `$PLANKTON 持有者可以使用。\n` +
+    `目前 VPN 仅对持有至少 1,000,000 $PLANKTON 的钱包开放。\n` +
     `支持协议：WireGuard、Amnezia、OpenVPN。\n` +
     `付费套餐和推荐计划即将推出。\n\n` +
     `打开 Mini App 连接钱包并创建 VPN 配置。`,
@@ -47,8 +47,8 @@ const zh: LocaleData = {
   device_enabled:        '设备已启用。',
   device_deleted:        '设备已删除。',
 
-  not_enough_plankton: '$PLANKTON 余额不足，无法获得免费访问。\n请订阅以获得付费访问。',
-  no_access: '访问被拒绝。\n\n需要持有 1,000,000+ $PLANKTON 或拥有有效订阅才能使用 VPN。',
+  not_enough_plankton: '$PLANKTON 余额不足，无法获得持有者访问。\n目前 VPN 仅对持有至少 1,000,000 $PLANKTON 的钱包开放。',
+  no_access: '访问被拒绝。\n\n目前 VPN 仅对持有至少 1,000,000 $PLANKTON 的钱包开放。',
   vpn_creation_failed: 'VPN 创建失败，请重试。',
   vpn_ready:           'VPN 已就绪。\n\n设备：\n{name}',
 
@@ -59,7 +59,9 @@ const zh: LocaleData = {
     `*Plankton VPN 是什么？*\n` +
     `面向 $PLANKTON 社区的私密 VPN，目前处于 holders\\-only beta。\n\n` +
     `*现在谁可以使用？*\n` +
-    `拥有有效持有者权限的 $PLANKTON 持有者。\n\n` +
+    `持有至少 1,000,000 $PLANKTON 的钱包。\n\n` +
+    `*如果我的代币更少怎么办？*\n` +
+    `访问暂时不会激活。付费套餐即将推出。\n\n` +
     `*持有者访问如何工作？*\n` +
     `打开 Mini App，连接钱包，检查权限，然后创建 VPN 配置。\n\n` +
     `*支持哪些协议？*\n` +

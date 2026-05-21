@@ -3,7 +3,7 @@ const en = {
   welcome:
     `🐋 *Welcome to Plankton VPN*\n\n` +
     `Plankton VPN is currently in holders\\-only beta\\.\n\n` +
-    `Access is available for $PLANKTON holders\\.\n` +
+    `Access is currently available only for wallets holding at least 1,000,000 $PLANKTON\\.\n` +
     `Supported protocols: WireGuard, Amnezia, OpenVPN\\.\n` +
     `Paid plans and the referral program are coming soon\\.\n\n` +
     `Open the Mini App to connect your wallet and create VPN configs\\.`,
@@ -51,8 +51,8 @@ const en = {
   device_deleted:        'Device deleted.',
 
   // Create VPN
-  not_enough_plankton: 'Not enough $PLANKTON for free access.\nUse Subscription to get paid access.',
-  no_access: 'Access denied.\n\nYou need 1,000,000+ $PLANKTON or an active subscription to use VPN.',
+  not_enough_plankton: 'Not enough $PLANKTON for holder access.\nAccess is currently available only for wallets holding at least 1,000,000 $PLANKTON.',
+  no_access: 'Access denied.\n\nAccess is currently available only for wallets holding at least 1,000,000 $PLANKTON.',
   vpn_creation_failed: 'VPN creation failed. Please try again.',
   vpn_ready:           'VPN access ready.\n\nDevice:\n{name}',
 
@@ -62,7 +62,9 @@ const en = {
     `*What is Plankton VPN?*\n` +
     `A private VPN for the $PLANKTON community, now in holders\\-only beta\\.\n\n` +
     `*Who can use it now?*\n` +
-    `$PLANKTON holders with active holder access\\.\n\n` +
+    `Wallets holding at least 1,000,000 $PLANKTON\\.\n\n` +
+    `*What if I have fewer tokens?*\n` +
+    `Access will not be activated yet\\. Paid plans are coming soon\\.\n\n` +
     `*How does holder access work?*\n` +
     `Open the Mini App, connect your wallet, check access, then create VPN configs\\.\n\n` +
     `*Which protocols are available?*\n` +
