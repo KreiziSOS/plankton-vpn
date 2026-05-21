@@ -42,39 +42,44 @@ async function runOpenVpnCommand(args: string[]) {
 }
 
 async function createOpenVpnProfile(deviceName: string) {
-  await runOpenVpnCommand(['easyrsa', 'build-client-full', deviceName, 'nopass'])
-  const profile = await runOpenVpnCommand(['ovpn_getclient', deviceName])
-  const hasCa = profile.includes('<ca>') && profile.includes('</ca>')
-  const hasCert = profile.includes('<cert>') && profile.includes('</cert>')
-  const hasKey = profile.includes('<key>') && profile.includes('</key>')
-  const hasTlsAuth = profile.includes('<tls-auth>') && profile.includes('</tls-auth>')
+  const { execFile } = await import('node:child_process')
+  const { promisify } = await import('node:util')
+  const execFileAsync = promisify(execFile)
 
-  console.log('OpenVPN profile generated', {
-    deviceName,
-    stdoutLength: profile.length,
-    hasCa,
-    hasCert,
-    hasKey,
-    hasTlsAuth,
-  })
+  const sshKey = process.env.OPENVPN_SSH_KEY || '/root/.ssh/plankton_openvpn_key'
+  const sshHost = process.env.OPENVPN_SSH_HOST || 'root@62.60.239.31'
+  const remoteDir = process.env.OPENVPN_REMOTE_DIR || '/opt/plankton-openvpn'
 
-  if (!hasCa) {
-    throw new Error('Invalid OpenVPN profile: missing CA block')
+  const safeName = sanitizeOpenVpnClientName(deviceName)
+
+  const cleanupCmd =
+    `cd ${remoteDir} && docker compose run --rm openvpn sh -c 'rm -f /etc/openvpn/pki/reqs/${safeName}.req /etc/openvpn/pki/private/${safeName}.key /etc/openvpn/pki/issued/${safeName}.crt'`
+
+  const createCmd =
+    `cd ${remoteDir} && docker compose run --rm openvpn easyrsa build-client-full ${safeName} nopass`
+
+  const exportCmd =
+    `cd ${remoteDir} && docker compose run --rm openvpn ovpn_getclient ${safeName}`
+
+  await execFileAsync('ssh', ['-i', sshKey, sshHost, cleanupCmd], { timeout: 120000 })
+  await execFileAsync('ssh', ['-i', sshKey, sshHost, createCmd], { timeout: 120000 })
+
+  const { stdout } = await execFileAsync(
+    'ssh',
+    ['-i', sshKey, sshHost, exportCmd],
+    {
+      timeout: 120000,
+      maxBuffer: 1024 * 1024,
+    },
+  )
+
+  const configText = stdout.toString()
+
+  if (!configText.includes('<ca>') || !configText.includes('<cert>') || !configText.includes('<key>')) {
+    throw new Error('Invalid OpenVPN profile from remote server')
   }
 
-  if (!hasCert) {
-    throw new Error('Invalid OpenVPN profile: missing cert block')
-  }
-
-  if (!hasKey) {
-    throw new Error('Invalid OpenVPN profile: missing key block')
-  }
-
-  if (!hasTlsAuth) {
-    throw new Error('Invalid OpenVPN profile: missing tls-auth block')
-  }
-
-  return profile
+  return configText
 }
 
 async function loginWgEasy() {
