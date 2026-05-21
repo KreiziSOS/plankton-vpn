@@ -3,13 +3,11 @@ import type { LocaleData } from './en'
 const zh: LocaleData = {
   welcome:
     `🐋 *欢迎使用 Plankton VPN*\n\n` +
-    `为 $PLANKTON 持有者提供的私人 VPN 访问。\n\n` +
-    `⚡ 高速 WireGuard 服务器\n` +
-    `🔐 使用 TON 或 $PLANKTON 支付\n` +
-    `🌍 在任何国家均可使用\n` +
-    `🎁 持有 1M\\+ $PLANKTON 免费使用\n\n` +
-    `所有 VPN 管理都在 Web App 中完成。\n` +
-    `点击 *Launch App* 连接钱包、检查访问权限、购买订阅、管理设备并下载配置。`,
+    `Plankton VPN 当前处于 holders\\-only beta。\n\n` +
+    `$PLANKTON 持有者可以使用。\n` +
+    `支持协议：WireGuard、Amnezia、OpenVPN。\n` +
+    `付费套餐和推荐计划即将推出。\n\n` +
+    `打开 Mini App 连接钱包并创建 VPN 配置。`,
 
   btn_launch_app:       'Launch App',
   btn_my_vpn:           '我的 VPN',
@@ -57,8 +55,24 @@ const zh: LocaleData = {
   // Only ASCII . in wireguard\.com and \.conf needs escaping.
   help_text:
     `*Plankton VPN 帮助*\n\n` +
-    `所有 VPN 管理都在 Web App 中完成。\n\n` +
-    `打开 *Launch App* 连接钱包、检查访问权限、购买订阅、管理设备，并下载 WireGuard 或 Amnezia 配置。\n\n` +
+    `*Plankton VPN 是什么？*\n` +
+    `面向 $PLANKTON 社区的私密 VPN，目前处于 holders\\-only beta。\n\n` +
+    `*现在谁可以使用？*\n` +
+    `拥有有效持有者权限的 $PLANKTON 持有者。\n\n` +
+    `*持有者访问如何工作？*\n` +
+    `打开 Mini App，连接钱包，检查权限，然后创建 VPN 配置。\n\n` +
+    `*支持哪些协议？*\n` +
+    `WireGuard、Amnezia 和 OpenVPN。\n\n` +
+    `*应该选择哪个协议？*\n` +
+    `WireGuard：最快。\n` +
+    `Amnezia：推荐用于受限网络。\n` +
+    `OpenVPN：兼容备用模式。\n\n` +
+    `*VPN 无法连接？*\n` +
+    `先尝试 Amnezia，如果网络限制更严格，再使用 OpenVPN。\n\n` +
+    `*连接后无法上网？*\n` +
+    `断开连接，删除配置，重新生成新配置并再次导入。\n\n` +
+    `付费套餐：即将推出。\n` +
+    `推荐计划：即将推出。\n\n` +
     `客服: https://t\\.me/plankton_support`,
 
   language_choose: '请选择语言：',

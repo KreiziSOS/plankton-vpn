@@ -46,8 +46,8 @@ declare global {
 const TEXT = {
   en: {
     title: 'PLANKTON VPN',
-    subtitle: 'Private VPN access for the $PLANKTON community.',
-    hold: 'Hold 1,000,000 $PLANKTON to unlock free VPN access.',
+    subtitle: 'Holders-only beta VPN access for the $PLANKTON community.',
+    hold: 'VPN access is currently available only for $PLANKTON holders.',
     check: 'Check Access',
     checking: 'Checking...',
     active: 'VPN Access Active',
@@ -89,18 +89,24 @@ const TEXT = {
     plans: 'VPN Plans',
     subActive: 'Subscription Active',
     protocol: 'VPN Protocol',
-    wireguardDesc: 'Fast • Lightweight • Default',
-    amneziaDesc: 'Better bypass • Anti-blocking • Smart routing',
-    openvpnDesc: 'TCP 9443 • Mobile fallback • Optional obfuscation',
+    wireguardDesc: 'Fastest • Lightweight • Default',
+    amneziaDesc: 'Recommended • Obfuscated • Stable',
+    openvpnDesc: 'Compatibility fallback • TCP 9443',
     recommendedUse: 'Recommended use',
     generatedFile: 'Generated file',
-    wgRecommended: 'Everyday VPN access with the official WireGuard app.',
-    amRecommended: 'Networks with blocking or DPI where AWG helps bypass filters.',
-    openvpnRecommended: 'Best fallback for mobile networks / TCP 9443.',
+    wgRecommended: 'Fastest option for everyday VPN access.',
+    amRecommended: 'Recommended stable option for restrictive networks.',
+    openvpnRecommended: 'Compatibility fallback when other protocols do not connect.',
     holderFree: 'Holder / Free',
     holderDuration: 'Free holder VPN access',
     comingSoon: 'Coming soon',
-    marketIntro: 'Buy extra VPN access even if you are already a holder. Paid plans unlock more devices and longer access.',
+    marketIntro: 'Paid VPN plans are being prepared for the next release.',
+    betaAccessTitle: 'Holders-only beta',
+    betaAccessText: 'Plankton VPN is open now for $PLANKTON holders. Connect your wallet, check holder access, then create WireGuard, Amnezia, or OpenVPN configs.',
+    paidComingSoonTitle: 'Paid plans are coming soon',
+    paidComingSoonText: 'Subscriptions will unlock broader device limits and longer access. During early access, VPN creation is reserved for holders.',
+    referralComingSoonTitle: 'Referral program is coming soon',
+    referralComingSoonText: 'Invites, rewards, and referral earnings will open after the holders-only beta is stable.',
     month1: '1 Month',
     month3: '3 Months',
     month12: '12 Months',
@@ -124,9 +130,9 @@ const TEXT = {
     pricesPoweredBy: 'Prices powered by',
     priceTonLabel: 'TON',
     pricePlanktonLabel: '$PLANKTON',
-    guideWireguardDesc: 'Fast, lightweight and default VPN protocol.',
-    guideAmneziaDesc: 'Better bypass, anti-blocking and AWG profile support.',
-    guideOpenvpnDesc: 'TCP 9443 fallback for restrictive networks.',
+    guideWireguardDesc: 'Fastest protocol for normal networks.',
+    guideAmneziaDesc: 'Recommended obfuscated and stable option for restrictive networks.',
+    guideOpenvpnDesc: 'Compatibility fallback for networks that block modern VPN protocols.',
     guideLimitsTitle: 'Device limits',
     wgStep1: 'Install the official WireGuard app.',
     wgStep2: 'Open VPN tab and select WireGuard.',
@@ -151,7 +157,7 @@ const TEXT = {
     confConfig: '.conf config',
     awgProfile: '.awg profile',
     ovpnProfile: '.ovpn profile',
-    fallbackHint: 'If WireGuard is blocked, generate an OpenVPN TCP 9443 profile.',
+    fallbackHint: 'Choose WireGuard for speed, Amnezia for recommended obfuscated stability, or OpenVPN for compatibility fallback.',
     openvpnInstall: 'Install OpenVPN Connect',
     referralTitle: 'Referral Program',
     referralSubtitle: 'Invite friends and earn from paid VPN subscriptions.',
@@ -194,8 +200,8 @@ const TEXT = {
   },
   ru: {
     title: 'PLANKTON VPN',
-    subtitle: 'Приватный VPN-доступ для сообщества $PLANKTON.',
-    hold: 'Холди 1,000,000 $PLANKTON, чтобы получить бесплатный VPN.',
+    subtitle: 'VPN-доступ holders-only beta для сообщества $PLANKTON.',
+    hold: 'Сейчас VPN доступен только держателям $PLANKTON.',
     check: 'Проверить доступ',
     checking: 'Проверка...',
     active: 'VPN доступ активен',
@@ -237,18 +243,24 @@ const TEXT = {
     plans: 'VPN тарифы',
     subActive: 'Подписка активна',
     protocol: 'VPN протокол',
-    wireguardDesc: 'Быстрый • Лёгкий • По умолчанию',
-    amneziaDesc: 'Лучше обход • Антиблокировка • Smart routing',
-    openvpnDesc: 'TCP 9443 • Резерв для мобильных сетей • Опциональная обфускация',
+    wireguardDesc: 'Самый быстрый • Лёгкий • По умолчанию',
+    amneziaDesc: 'Рекомендуемый • Обфускация • Стабильный',
+    openvpnDesc: 'Режим совместимости • TCP 9443',
     recommendedUse: 'Рекомендуемое использование',
     generatedFile: 'Формат файла',
-    wgRecommended: 'Ежедневный VPN-доступ через официальное приложение WireGuard.',
-    amRecommended: 'Сети с блокировками или DPI, где AWG помогает обходить фильтры.',
-    openvpnRecommended: 'Лучший запасной вариант для мобильных сетей / TCP 9443.',
+    wgRecommended: 'Самый быстрый вариант для ежедневного VPN-доступа.',
+    amRecommended: 'Рекомендуемый стабильный вариант для сетей с ограничениями.',
+    openvpnRecommended: 'Режим совместимости, если другие протоколы не подключаются.',
     holderFree: 'Холдер / бесплатно',
     holderDuration: 'Бесплатный VPN-доступ для холдеров',
     comingSoon: 'Скоро',
-    marketIntro: 'Покупай дополнительный VPN-доступ даже если ты уже холдер. Платные тарифы дают больше устройств и более долгий доступ.',
+    marketIntro: 'Платные VPN-тарифы готовятся к следующему релизу.',
+    betaAccessTitle: 'Holders-only beta',
+    betaAccessText: 'Plankton VPN уже открыт для держателей $PLANKTON. Подключи кошелёк, проверь холдерский доступ и создай конфиг WireGuard, Amnezia или OpenVPN.',
+    paidComingSoonTitle: 'Платные тарифы скоро',
+    paidComingSoonText: 'Подписки откроют расширенные лимиты устройств и более долгий доступ. На этапе early access создание VPN доступно держателям.',
+    referralComingSoonTitle: 'Реферальная программа скоро',
+    referralComingSoonText: 'Инвайты, награды и реферальные начисления откроются после стабилизации holders-only beta.',
     month1: '1 месяц',
     month3: '3 месяца',
     month12: '12 месяцев',
@@ -272,9 +284,9 @@ const TEXT = {
     pricesPoweredBy: 'Цены обновляются через',
     priceTonLabel: 'TON',
     pricePlanktonLabel: '$PLANKTON',
-    guideWireguardDesc: 'Быстрый, лёгкий и основной VPN-протокол.',
-    guideAmneziaDesc: 'Лучше для обхода блокировок, антиблокинга и AWG профиля.',
-    guideOpenvpnDesc: 'Резервный TCP 9443 для сетей со строгими ограничениями.',
+    guideWireguardDesc: 'Самый быстрый протокол для обычных сетей.',
+    guideAmneziaDesc: 'Рекомендуемый обфусцированный и стабильный вариант для сетей с ограничениями.',
+    guideOpenvpnDesc: 'Режим совместимости для сетей, блокирующих современные VPN-протоколы.',
     guideLimitsTitle: 'Лимиты устройств',
     wgStep1: 'Установи официальное приложение WireGuard.',
     wgStep2: 'Открой вкладку VPN и выбери WireGuard.',
@@ -299,7 +311,7 @@ const TEXT = {
     confConfig: '.conf конфиг',
     awgProfile: '.awg профиль',
     ovpnProfile: '.ovpn профиль',
-    fallbackHint: 'Если WireGuard заблокирован, создайте профиль OpenVPN TCP 9443.',
+    fallbackHint: 'Выбирайте WireGuard для скорости, Amnezia для рекомендованной обфускации и стабильности, OpenVPN для совместимости.',
     openvpnInstall: 'Установить OpenVPN Connect',
     referralTitle: 'Реферальная программа',
     referralSubtitle: 'Приглашай друзей и зарабатывай с платных VPN-подписок.',
@@ -342,8 +354,8 @@ const TEXT = {
   },
   ua: {
     title: 'PLANKTON VPN',
-    subtitle: 'Приватний VPN-доступ для спільноти $PLANKTON.',
-    hold: 'Тримай 1,000,000 $PLANKTON, щоб отримати безкоштовний VPN.',
+    subtitle: 'VPN-доступ holders-only beta для спільноти $PLANKTON.',
+    hold: 'Зараз VPN доступний лише власникам $PLANKTON.',
     check: 'Перевірити доступ',
     checking: 'Перевірка...',
     active: 'VPN доступ активний',
@@ -385,18 +397,24 @@ const TEXT = {
     plans: 'VPN тарифи',
     subActive: 'Підписка активна',
     protocol: 'VPN протокол',
-    wireguardDesc: 'Швидкий • Легкий • За замовчуванням',
-    amneziaDesc: 'Кращий обхід • Антиблокування • Smart routing',
-    openvpnDesc: 'TCP 9443 • Резерв для мобільних мереж • Опційна обфускація',
+    wireguardDesc: 'Найшвидший • Легкий • За замовчуванням',
+    amneziaDesc: 'Рекомендований • Обфускація • Стабільний',
+    openvpnDesc: 'Режим сумісності • TCP 9443',
     recommendedUse: 'Рекомендоване використання',
     generatedFile: 'Формат файлу',
-    wgRecommended: 'Щоденний VPN-доступ через офіційний застосунок WireGuard.',
-    amRecommended: 'Мережі з блокуваннями або DPI, де AWG допомагає обходити фільтри.',
-    openvpnRecommended: 'Найкращий запасний варіант для мобільних мереж / TCP 9443.',
+    wgRecommended: 'Найшвидший варіант для щоденного VPN-доступу.',
+    amRecommended: 'Рекомендований стабільний варіант для мереж з обмеженнями.',
+    openvpnRecommended: 'Режим сумісності, якщо інші протоколи не підключаються.',
     holderFree: 'Холдер / безкоштовно',
     holderDuration: 'Безкоштовний VPN-доступ для холдерів',
     comingSoon: 'Скоро',
-    marketIntro: 'Купуй додатковий VPN-доступ навіть якщо ти вже холдер. Платні тарифи дають більше пристроїв і довший доступ.',
+    marketIntro: 'Платні VPN-тарифи готуються до наступного релізу.',
+    betaAccessTitle: 'Holders-only beta',
+    betaAccessText: 'Plankton VPN вже відкритий для власників $PLANKTON. Підключи гаманець, перевір холдерський доступ і створи конфіг WireGuard, Amnezia або OpenVPN.',
+    paidComingSoonTitle: 'Платні тарифи скоро',
+    paidComingSoonText: 'Підписки відкриють розширені ліміти пристроїв і довший доступ. На етапі early access створення VPN доступне власникам.',
+    referralComingSoonTitle: 'Реферальна програма скоро',
+    referralComingSoonText: 'Запрошення, нагороди та реферальні нарахування відкриються після стабілізації holders-only beta.',
     month1: '1 місяць',
     month3: '3 місяці',
     month12: '12 місяців',
@@ -420,9 +438,9 @@ const TEXT = {
     pricesPoweredBy: 'Ціни оновлюються через',
     priceTonLabel: 'TON',
     pricePlanktonLabel: '$PLANKTON',
-    guideWireguardDesc: 'Швидкий, легкий та основний VPN-протокол.',
-    guideAmneziaDesc: 'Краще для обходу блокувань, антиблокінгу та AWG профілю.',
-    guideOpenvpnDesc: 'Резервний TCP 9443 для мереж зі строгими обмеженнями.',
+    guideWireguardDesc: 'Найшвидший протокол для звичайних мереж.',
+    guideAmneziaDesc: 'Рекомендований обфускований і стабільний варіант для мереж з обмеженнями.',
+    guideOpenvpnDesc: 'Режим сумісності для мереж, що блокують сучасні VPN-протоколи.',
     guideLimitsTitle: 'Ліміти пристроїв',
     wgStep1: 'Встанови офіційний застосунок WireGuard.',
     wgStep2: 'Відкрий вкладку VPN і вибери WireGuard.',
@@ -447,7 +465,7 @@ const TEXT = {
     confConfig: '.conf конфіг',
     awgProfile: '.awg профіль',
     ovpnProfile: '.ovpn профіль',
-    fallbackHint: 'Якщо WireGuard заблокований, створіть профіль OpenVPN TCP 9443.',
+    fallbackHint: 'Обирай WireGuard для швидкості, Amnezia для рекомендованої обфускації та стабільності, OpenVPN для сумісності.',
     openvpnInstall: 'Встановити OpenVPN Connect',
     referralTitle: 'Реферальна програма',
     referralSubtitle: 'Запрошуй друзів і заробляй з платних VPN-підписок.',
@@ -490,8 +508,8 @@ const TEXT = {
   },
   zh: {
     title: 'PLANKTON VPN',
-    subtitle: '面向 $PLANKTON 社区的私密 VPN 访问。',
-    hold: '持有 1,000,000 $PLANKTON 即可解锁免费 VPN。',
+    subtitle: '面向 $PLANKTON 社区的持有者专属 beta VPN 访问。',
+    hold: '当前 VPN 仅面向 $PLANKTON 持有者开放。',
     check: '检查权限',
     checking: '检查中...',
     active: 'VPN 已激活',
@@ -533,18 +551,24 @@ const TEXT = {
     plans: 'VPN 套餐',
     subActive: '订阅已激活',
     protocol: 'VPN 协议',
-    wireguardDesc: '快速 • 轻量 • 默认',
-    amneziaDesc: '更好绕过 • 抗封锁 • 智能路由',
-    openvpnDesc: 'TCP 9443 • 移动网络备用 • 可选混淆',
+    wireguardDesc: '最快 • 轻量 • 默认',
+    amneziaDesc: '推荐 • 混淆 • 稳定',
+    openvpnDesc: '兼容备用模式 • TCP 9443',
     recommendedUse: '推荐用途',
     generatedFile: '生成文件',
-    wgRecommended: '使用官方 WireGuard 应用进行日常 VPN 访问。',
-    amRecommended: '适合存在封锁或 DPI、需要 AWG 绕过过滤的网络。',
-    openvpnRecommended: '移动网络最佳备用方案 / TCP 9443。',
+    wgRecommended: '日常 VPN 访问的最快选择。',
+    amRecommended: '受限网络中的推荐稳定混淆方案。',
+    openvpnRecommended: '其他协议无法连接时的兼容备用模式。',
     holderFree: '持有者 / 免费',
     holderDuration: '持有者免费 VPN 访问',
     comingSoon: '即将推出',
-    marketIntro: '即使你已经是持有者，也可以购买额外 VPN 权限。付费套餐可解锁更多设备和更长访问时间。',
+    marketIntro: '付费 VPN 套餐正在为下一版本准备。',
+    betaAccessTitle: '持有者专属 beta',
+    betaAccessText: 'Plankton VPN 现已向 $PLANKTON 持有者开放。连接钱包、检查持有者权限，然后创建 WireGuard、Amnezia 或 OpenVPN 配置。',
+    paidComingSoonTitle: '付费套餐即将推出',
+    paidComingSoonText: '订阅将解锁更高设备限制和更长访问时间。Early access 阶段仅持有者可创建 VPN。',
+    referralComingSoonTitle: '推荐计划即将推出',
+    referralComingSoonText: '邀请、奖励和推荐收益将在 holders-only beta 稳定后开放。',
     month1: '1 个月',
     month3: '3 个月',
     month12: '12 个月',
@@ -568,9 +592,9 @@ const TEXT = {
     pricesPoweredBy: '价格由以下服务提供',
     priceTonLabel: 'TON',
     pricePlanktonLabel: '$PLANKTON',
-    guideWireguardDesc: '快速、轻量、默认 VPN 协议。',
-    guideAmneziaDesc: '更适合绕过封锁、抗干扰和 AWG 配置。',
-    guideOpenvpnDesc: '面向严格网络限制的 TCP 9443 备用方案。',
+    guideWireguardDesc: '普通网络中的最快协议。',
+    guideAmneziaDesc: '面向受限网络的推荐稳定混淆方案。',
+    guideOpenvpnDesc: '用于阻断现代 VPN 协议网络的兼容模式。',
     guideLimitsTitle: '设备限制',
     wgStep1: '安装官方 WireGuard 应用。',
     wgStep2: '打开 VPN 标签并选择 WireGuard。',
@@ -595,7 +619,7 @@ const TEXT = {
     confConfig: '.conf 配置',
     awgProfile: '.awg 配置',
     ovpnProfile: '.ovpn 配置',
-    fallbackHint: '如果 WireGuard 被阻断，请生成 OpenVPN TCP 9443 配置。',
+    fallbackHint: '追求速度选 WireGuard，推荐混淆和稳定性选 Amnezia，兼容备用选 OpenVPN。',
     openvpnInstall: '安装 OpenVPN Connect',
     referralTitle: '推荐计划',
     referralSubtitle: '邀请朋友并从付费 VPN 订阅中赚取奖励。',
@@ -1248,43 +1272,10 @@ function ProtocolSelector({ t, protocol, setProtocol }: any) {
   )
 }
 
-function PlansBlock({ t, loading, createPlan, payWithTon, pricingData }: any) {
-  const [selectedPlan, setSelectedPlan] = useState('ONE_MONTH')
-
-  const plans = [
-    {
-      key: 'ONE_MONTH',
-      label: t.month1,
-      duration: t.days30,
-      devices: 2,
-      tonUsd: 3,
-      planktonUsd: 2,
-      bestFor: t.bestOne,
-    },
-    {
-      key: 'THREE_MONTHS',
-      label: t.month3,
-      duration: t.days90,
-      devices: 3,
-      tonUsd: 7,
-      planktonUsd: 5,
-      bestFor: t.bestThree,
-    },
-    {
-      key: 'TWELVE_MONTHS',
-      label: t.month12,
-      duration: t.days365,
-      devices: 5,
-      tonUsd: 20,
-      planktonUsd: 14,
-      bestFor: t.bestYear,
-    },
-  ]
-
+function PlansBlock({ t }: any) {
   return (
     <div style={setupCard}>
       <div style={sectionTitle}>{t.plans}</div>
-      <div style={marketIntro}>{t.marketIntro}</div>
 
       <div style={planCardPremium}>
         <div style={planPremiumTop}>
@@ -1308,67 +1299,16 @@ function PlansBlock({ t, loading, createPlan, payWithTon, pricingData }: any) {
         </div>
       </div>
 
-      {plans.map(({ key, label, duration, devices, tonUsd, planktonUsd, bestFor }) => {
-        const api = pricingData?.plans?.find((p: any) => p.plan === key)
-        const tonLine = api ? `${api.tonDisplay} TON ≈ $${tonUsd}` : `${t.priceTonLabel}: $${tonUsd}`
-        const planktonLine = api
-          ? `${api.planktonDisplay} $PLANKTON ≈ $${planktonUsd}`
-          : `${t.pricePlanktonLabel}: $${planktonUsd}`
-        const active = selectedPlan === key
-
-        return (
-          <div
-            key={key}
-            onClick={() => setSelectedPlan(key)}
-            style={{ ...planCardPremium, ...(active ? planCardPremiumActive : {}) }}
-          >
-            <div style={planPremiumTop}>
-              <div>
-                <div style={planTitle}>{label}</div>
-                <div style={muted}>{duration}</div>
-              </div>
-              <div style={planDeviceBadge}>{devices} {t.devicesCount}</div>
-            </div>
-
-            <div style={planFeatureGrid}>
-              <div style={planFeature}>{t.featureProtocols}</div>
-              <div style={planFeature}>{t.featureDevices}</div>
-              <div style={planFeature}>{t.featureExpiry}</div>
-              <div style={planFeature}>{t.featureTelegram}</div>
-            </div>
-
-            {active && (
-              <div style={planDetailsBox}>
-                <div style={planDetailsText}>{bestFor}</div>
-                <div style={planDetailsText}>{t.deviceLimitLine}: {devices} {t.activeVpnDevices}.</div>
-                <div style={planDetailsText}>{t.protocolsIncluded}</div>
-              </div>
-            )}
-
-            <div style={planPriceBox}>
-              <div>
-                <div style={muted}>{tonLine}</div>
-                <div style={muted}>{planktonLine}</div>
-              </div>
-            </div>
-
-            <div style={planButtons} onClick={(e) => e.stopPropagation()}>
-              <button disabled={loading} onClick={() => payWithTon(key)} style={smallGreenBtn}>
-                {t.payTon}
-              </button>
-              <button disabled={loading} onClick={() => createPlan(key, 'PLANKTON')} style={smallBlueBtn}>
-                {t.payPlankton}
-              </button>
-            </div>
-          </div>
-        )
-      })}
-
-      <div style={poweredBy}>
-        {t.pricesPoweredBy}{' '}
-        <a href="https://www.coingecko.com" target="_blank" rel="noopener" style={cgLink}>
-          CoinGecko
-        </a>
+      <div style={comingSoonPanel}>
+        <div style={comingSoonBadge}>{t.comingSoon}</div>
+        <div style={planTitle}>{t.paidComingSoonTitle}</div>
+        <div style={marketIntro}>{t.paidComingSoonText}</div>
+        <div style={planFeatureGrid}>
+          <div style={planFeature}>{t.month1}</div>
+          <div style={planFeature}>{t.month3}</div>
+          <div style={planFeature}>{t.month12}</div>
+          <div style={planFeature}>{t.protocolsIncluded}</div>
+        </div>
       </div>
     </div>
   )
@@ -1715,145 +1655,22 @@ function ProtocolSetupPanel({ protocol, t, loading, generateConfig, configUrl, c
   )
 }
 
-function ReferralProgram({ wallet, t }: any) {
-  const [referralLink, setReferralLink] = useState('')
-  const [referralLoading, setReferralLoading] = useState(false)
-  const [stats, setStats] = useState<{
-    totalRefs: number
-    activePaidRefs: number
-    earnedTon: number
-    withdrawnTon: number
-    bonusYearAvailable: boolean
-    bonusYearGranted: boolean
-  } | null>(null)
-
-  useEffect(() => {
-    if (!wallet) { setStats(null); return }
-    fetch(`/api/referral/stats?wallet=${encodeURIComponent(wallet)}`)
-      .then(r => r.json())
-      .then(data => { if (data.ok) setStats(data) })
-      .catch(() => {})
-  }, [wallet])
-
-  const totalRefs = stats?.totalRefs ?? 0
-  const activePaidRefs = stats?.activePaidRefs ?? 0
-  const earnedTon = stats?.earnedTon ?? 0
-  const freeYearTarget = 5
-  const progress = Math.min(activePaidRefs, freeYearTarget)
-  const shareText = t.referralShareText
-
-  useEffect(() => {
-    if (!wallet) {
-      setReferralLink('')
-      return
-    }
-
-    let cancelled = false
-
-    async function loadReferral() {
-      try {
-        setReferralLoading(true)
-        const res = await fetch(`/api/referral/me?wallet=${encodeURIComponent(wallet)}`, {
-          cache: 'no-store',
-        })
-        const data = await res.json()
-
-        if (!cancelled && data.ok && data.referralLink) {
-          setReferralLink(data.referralLink)
-        }
-      } catch (e) {
-        console.error('Referral load error:', e)
-        if (!cancelled) setReferralLink('')
-      } finally {
-        if (!cancelled) setReferralLoading(false)
-      }
-    }
-
-    loadReferral()
-
-    return () => {
-      cancelled = true
-    }
-  }, [wallet])
-
-  async function copyReferral() {
-    if (!wallet) {
-      alert(t.connectWalletFirst)
-      return
-    }
-
-    if (!referralLink) return
-
-    try {
-      await navigator.clipboard.writeText(referralLink)
-      alert(t.copied)
-    } catch {
-      alert(t.copyFailed)
-    }
-  }
-
-  function shareReferral() {
-    if (!wallet) {
-      alert(t.connectWalletFirst)
-      return
-    }
-
-    if (!referralLink) return
-
-    const url = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`
-    window.open(url, '_blank')
-  }
-
+function ReferralProgram({ t }: any) {
   return (
     <div style={referralCard}>
       <div style={referralTop}>
         <div>
           <div style={sectionTitle}>{t.referralTitle}</div>
-          <div style={muted}>{t.referralSubtitle}</div>
+          <div style={muted}>{t.referralComingSoonText}</div>
         </div>
-        <div style={referralBadge}>10%</div>
+        <div style={referralBadge}>{t.comingSoon}</div>
       </div>
 
-      <div style={referralRewardPill}>{t.referralReward}</div>
+      <div style={referralRewardPill}>{t.referralComingSoonTitle}</div>
 
-      {wallet && referralLoading && (
-        <div style={referralSmallText}>{t.referralLoading}</div>
-      )}
-
-      <div style={referralStatsGrid}>
-        <div style={referralStatBox}>
-          <div style={referralStatValue}>{totalRefs}</div>
-          <div style={referralStatLabel}>{t.totalReferrals}</div>
-        </div>
-        <div style={referralStatBox}>
-          <div style={referralStatValue}>{activePaidRefs}</div>
-          <div style={referralStatLabel}>{t.activePaid}</div>
-        </div>
-        <div style={referralStatBox}>
-          <div style={referralStatValue}>{earnedTon}</div>
-          <div style={referralStatLabel}>{t.earnedTon}</div>
-        </div>
-      </div>
-
-      <div style={progressWrap}>
-        <div style={progressTopLine}>
-          <span>{t.freeYearProgress}</span>
-          <span>{progress}/{freeYearTarget}</span>
-        </div>
-        <div style={progressSlots}>
-          {Array.from({ length: freeYearTarget }).map((_, i) => (
-            <div key={i} style={{ ...progressSlot, ...(i < progress ? progressSlotActive : {}) }} />
-          ))}
-        </div>
-      </div>
-
-      <div style={referralActions}>
-        <button type="button" onClick={shareReferral} disabled={referralLoading || !referralLink} style={referralShareBtn}>
-          {t.inviteFriend}
-        </button>
-        <button type="button" onClick={copyReferral} disabled={referralLoading || !referralLink} style={referralCopyBtn}>
-          {t.copy}
-        </button>
+      <div style={planFeatureGrid}>
+        <div style={planFeature}>{t.referralReward}</div>
+        <div style={planFeature}>{t.featureTelegram}</div>
       </div>
 
       <div style={referralSmallText}>{t.withdrawals}</div>
@@ -2314,6 +2131,19 @@ const comingSoon: React.CSSProperties = {
   color: '#50d4ff',
   fontSize: 11,
   fontWeight: 1000,
+}
+
+const comingSoonPanel: React.CSSProperties = {
+  borderRadius: 22,
+  padding: 14,
+  background: 'linear-gradient(180deg,rgba(0,152,234,.13),rgba(255,255,255,.05))',
+  border: '1px solid rgba(80,212,255,.18)',
+}
+
+const comingSoonBadge: React.CSSProperties = {
+  ...comingSoon,
+  marginTop: 0,
+  marginBottom: 10,
 }
 
 const smallGreenBtn: React.CSSProperties = {

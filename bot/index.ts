@@ -221,16 +221,16 @@ bot.callbackQuery('help', async (ctx) => {
     {
       parse_mode: 'MarkdownV2',
       reply_markup: new InlineKeyboard()
-        .url(
-          loc(lang, 'btn_contact_support'),
-          SUPPORT_URL
-        )
-        .row()
         .url('Telegram Channel', CHANNEL_URL)
         .row()
         .url('Telegram Chat', CHAT_URL)
         .row()
-        .url('Telegram Bot', BOT_URL),
+        .url('Telegram Bot', BOT_URL)
+        .row()
+        .url(
+          loc(lang, 'btn_contact_support'),
+          SUPPORT_URL
+        ),
     }
   )
 })

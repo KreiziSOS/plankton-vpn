@@ -2,13 +2,11 @@ const en = {
   // /start photo caption — MarkdownV2
   welcome:
     `🐋 *Welcome to Plankton VPN*\n\n` +
-    `Private VPN access for $PLANKTON holders\\.\n\n` +
-    `⚡ Fast WireGuard servers\n` +
-    `🔐 Pay with TON or $PLANKTON\n` +
-    `🌍 Works in any country\n` +
-    `🎁 Free for holders of 1M\\+ $PLANKTON\n\n` +
-    `All VPN management is inside the Web App\\.\n` +
-    `Tap *Launch App* to connect your wallet, check access, buy a subscription, manage devices, and download configs\\.`,
+    `Plankton VPN is currently in holders\\-only beta\\.\n\n` +
+    `Access is available for $PLANKTON holders\\.\n` +
+    `Supported protocols: WireGuard, Amnezia, OpenVPN\\.\n` +
+    `Paid plans and the referral program are coming soon\\.\n\n` +
+    `Open the Mini App to connect your wallet and create VPN configs\\.`,
 
   // Inline keyboard buttons
   btn_launch_app:       'Launch App',
@@ -60,8 +58,24 @@ const en = {
   // Help FAQ — MarkdownV2
   help_text:
     `*Plankton VPN Help*\n\n` +
-    `All VPN management is inside the Web App\\.\n\n` +
-    `Open *Launch App* to connect your wallet, check access, buy a subscription, manage devices, and download WireGuard or Amnezia configs\\.\n\n` +
+    `*What is Plankton VPN?*\n` +
+    `A private VPN for the $PLANKTON community, now in holders\\-only beta\\.\n\n` +
+    `*Who can use it now?*\n` +
+    `$PLANKTON holders with active holder access\\.\n\n` +
+    `*How does holder access work?*\n` +
+    `Open the Mini App, connect your wallet, check access, then create VPN configs\\.\n\n` +
+    `*Which protocols are available?*\n` +
+    `WireGuard, Amnezia, and OpenVPN\\.\n\n` +
+    `*Which protocol should I choose?*\n` +
+    `WireGuard: fastest\\.\n` +
+    `Amnezia: recommended for restrictive networks\\.\n` +
+    `OpenVPN: compatibility fallback mode\\.\n\n` +
+    `*VPN does not connect?*\n` +
+    `Try Amnezia first, then OpenVPN if the network is restrictive\\.\n\n` +
+    `*Internet does not work after connecting?*\n` +
+    `Disconnect, delete the profile, generate a fresh config, and import it again\\.\n\n` +
+    `Paid plans: Coming Soon\\.\n` +
+    `Referral program: Coming Soon\\.\n\n` +
     `Support: https://t\\.me/plankton_support`,
 
   // Language picker
