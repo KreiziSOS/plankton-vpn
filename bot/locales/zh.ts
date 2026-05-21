@@ -15,6 +15,7 @@ const zh: LocaleData = {
   btn_subscription:     '订阅',
   btn_help:             '帮助',
   btn_language:         '🌐 语言',
+  btn_support:          'Support',
   btn_contact_support:  '联系客服',
   btn_download_config:  '下载配置',
   btn_disable:          '禁用',
@@ -73,7 +74,7 @@ const zh: LocaleData = {
     `断开连接，删除配置，重新生成新配置并再次导入。\n\n` +
     `付费套餐：即将推出。\n` +
     `推荐计划：即将推出。\n\n` +
-    `客服: https://t\\.me/plankton_support`,
+    `客服: https://t\\.me/plankton\\_support`,
 
   language_choose: '请选择语言：',
   language_set:    '✅ 语言已设置为中文',

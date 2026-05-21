@@ -74,7 +74,7 @@ bot.command('start', async (ctx) => {
   }
 
   await ctx.replyWithPhoto(
-    new InputFile('./bot/assets/welcome.png'),
+    new InputFile('./public/assets/plankton-beta-splash.png'),
     {
       caption:    loc(lang, 'welcome'),
       parse_mode: 'MarkdownV2',
@@ -221,16 +221,7 @@ bot.callbackQuery('help', async (ctx) => {
     {
       parse_mode: 'MarkdownV2',
       reply_markup: new InlineKeyboard()
-        .url('Telegram Channel', CHANNEL_URL)
-        .row()
-        .url('Telegram Chat', CHAT_URL)
-        .row()
-        .url('Telegram Bot', BOT_URL)
-        .row()
-        .url(
-          loc(lang, 'btn_contact_support'),
-          SUPPORT_URL
-        ),
+        .url(loc(lang, 'btn_support'), SUPPORT_URL),
     }
   )
 })
@@ -266,7 +257,7 @@ bot.callbackQuery(/^set_lang:(.+)/, async (ctx) => {
   await ctx.answerCallbackQuery(loc(newLang, 'language_set'))
 
   await ctx.replyWithPhoto(
-    new InputFile('./bot/assets/welcome.png'),
+    new InputFile('./public/assets/plankton-beta-splash.png'),
     {
       caption:    loc(newLang, 'welcome'),
       parse_mode: 'MarkdownV2',

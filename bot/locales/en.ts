@@ -15,6 +15,7 @@ const en = {
   btn_subscription:     'Subscription',
   btn_help:             'Help',
   btn_language:         '🌐 Language',
+  btn_support:          'Support',
   btn_contact_support:  'Contact Support',
   btn_download_config:  'Download Config',
   btn_disable:          'Disable',
@@ -76,7 +77,7 @@ const en = {
     `Disconnect, delete the profile, generate a fresh config, and import it again\\.\n\n` +
     `Paid plans: Coming Soon\\.\n` +
     `Referral program: Coming Soon\\.\n\n` +
-    `Support: https://t\\.me/plankton_support`,
+    `Support: https://t\\.me/plankton\\_support`,
 
   // Language picker
   language_choose: 'Choose your language:',

@@ -1317,7 +1317,7 @@ function PlansBlock({ t }: any) {
 function Splash() {
   return (
     <div style={splash}>
-      <img src="/assets/plankton-splash.png" alt="Plankton" style={splashImg} />
+      <img src="/assets/plankton-beta-splash.png" alt="Plankton" style={splashImg} />
       <div style={splashTitle}>PLANKTON VPN</div>
     </div>
   )
@@ -1606,7 +1606,7 @@ function ProtocolSetupPanel({ protocol, t, loading, generateConfig, configUrl, c
   const desc = isAmnezia ? t.amneziaDesc : isOpenVpn ? t.openvpnDesc : t.wireguardDesc
   const installUrl = isAmnezia ? 'https://amnezia.org/' : isOpenVpn ? 'https://openvpn.net/client/' : WIREGUARD_URL
   const fileType = isAmnezia ? t.awgProfile : isOpenVpn ? t.ovpnProfile : t.confConfig
-  const logo = isAmnezia ? '/amnezia-logo.png' : isOpenVpn ? '/assets/logo.png' : '/assets/wireguard-logo.png'
+  const logo = isAmnezia ? '/assets/amnezia-logo.png' : isOpenVpn ? '/assets/openvpn-logo.png' : '/assets/wireguard-logo.png'
   const canDownload = configUrl && configProtocol === protocol
   const downloadLabel = isAmnezia ? t.downloadAmnezia : isOpenVpn ? t.downloadOpenvpn : t.downloadWireguard
 

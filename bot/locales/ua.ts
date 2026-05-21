@@ -15,6 +15,7 @@ const ua: LocaleData = {
   btn_subscription:     'Підписка',
   btn_help:             'Допомога',
   btn_language:         '🌐 Мова',
+  btn_support:          'Підтримка',
   btn_contact_support:  'Написати в підтримку',
   btn_download_config:  'Завантажити конфіг',
   btn_disable:          'Вимкнути',
@@ -71,7 +72,7 @@ const ua: LocaleData = {
     `Відключіться, видаліть профіль, створіть свіжий конфіг та імпортуйте його знову\\.\n\n` +
     `Платні тарифи: скоро\\.\n` +
     `Реферальна програма: скоро\\.\n\n` +
-    `Підтримка: https://t\\.me/plankton_support`,
+    `Підтримка: https://t\\.me/plankton\\_support`,
 
   language_choose: 'Оберіть мову:',
   language_set:    '✅ Мову змінено на Українську',

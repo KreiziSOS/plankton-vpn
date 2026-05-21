@@ -15,6 +15,7 @@ const ru: LocaleData = {
   btn_subscription:     'Подписка',
   btn_help:             'Помощь',
   btn_language:         '🌐 Язык',
+  btn_support:          'Поддержка',
   btn_contact_support:  'Написать в поддержку',
   btn_download_config:  'Скачать конфиг',
   btn_disable:          'Отключить',
@@ -71,7 +72,7 @@ const ru: LocaleData = {
     `Отключитесь, удалите профиль, создайте свежий конфиг и импортируйте его заново\\.\n\n` +
     `Платные тарифы: скоро\\.\n` +
     `Реферальная программа: скоро\\.\n\n` +
-    `Поддержка: https://t\\.me/plankton_support`,
+    `Поддержка: https://t\\.me/plankton\\_support`,
 
   language_choose: 'Выберите язык:',
   language_set:    '✅ Язык изменён на Русский',
